@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GymTracker">
-  <title>GymTracker Pro - RIR & Biometrics</title>
+  <title>GymTracker Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -19,15 +19,15 @@
       --accent-amber: #fbbf24;
       --text: #f8fafc;
       --muted: #94a3b8;
-      --border: #2dd4bf33;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 80px; max-width: 650px; margin: 0 auto; }
     
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-top: 6px; }
-    h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; }
-    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; background: var(--card); padding: 5px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #1e293b; }
-    .tab-btn { background: transparent; color: var(--muted); border: none; padding: 10px 6px; font-size: 0.85rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin: 0; }
+    h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+    
+    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card); padding: 5px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #1e293b; }
+    .tab-btn { background: transparent; color: var(--muted); border: none; padding: 10px 4px; font-size: 0.78rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin: 0; }
     .tab-btn.active { background: var(--accent); color: #090d16; }
 
     .section { display: none; }
@@ -37,7 +37,6 @@
     .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
     
     label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; font-weight: 600; }
-    /* font-size 16px evita que Safari en iPhone haga zoom automático al tocar un input */
     input, select, button {
       width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #334155;
       background: #090d16; color: var(--text); font-size: 16px;
@@ -48,7 +47,7 @@
       cursor: pointer; margin-top: 14px; transition: transform 0.1s;
     }
     button:active { transform: scale(0.98); }
-    .btn-sec { background: var(--card-alt); color: var(--text); border: 1px solid #334155; font-size: 0.85rem; padding: 8px 12px; }
+    .btn-sec { background: var(--card-alt); color: var(--text); border: 1px solid #334155; font-size: 0.8rem; padding: 7px 10px; }
 
     .row-4 { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.3fr; gap: 8px; }
     @media (max-width: 480px) { .row-4 { grid-template-columns: 1fr 1fr; } }
@@ -67,6 +66,17 @@
     .rir-badge {
       padding: 2px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
       background: #334155; color: var(--accent-amber);
+    }
+
+    .exercise-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; background: #090d16; border: 1px solid #1e293b;
+      border-radius: 10px; margin-bottom: 8px;
+    }
+
+    .empty-banner {
+      background: #1e293b; border: 1px dashed var(--accent); border-radius: 12px;
+      padding: 16px; text-align: center; margin-bottom: 12px;
     }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
@@ -89,31 +99,30 @@
     </div>
   </header>
 
-  <!-- Navegación por Pestañas -->
+  <!-- 4 Pestañas Principales -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('tab-train', this)">🏋️ Entrenar</button>
-    <button class="tab-btn" onclick="switchTab('tab-progress', this)">📈 Progreso</button>
-    <button class="tab-btn" onclick="switchTab('tab-band', this)">⌚ Banda / Salud</button>
+    <button id="btn-tab-train" class="tab-btn active" onclick="switchTab('tab-train', this)">🏋️ Entrenar</button>
+    <button id="btn-tab-exercises" class="tab-btn" onclick="switchTab('tab-exercises', this)">📋 Ejercicios</button>
+    <button id="btn-tab-progress" class="tab-btn" onclick="switchTab('tab-progress', this)">📈 Progreso</button>
+    <button id="btn-tab-band" class="tab-btn" onclick="switchTab('tab-band', this)">⌚ Salud</button>
   </div>
 
   <!-- PESTAÑA 1: ENTRENAR -->
   <div id="tab-train" class="section active">
-    <div class="card">
+    <div id="noExercisesBanner" class="empty-banner" style="display:none;">
+      <p style="margin-bottom:10px; font-weight:600;">👋 ¡Bienvenido! Aún no has cargado tus ejercicios.</p>
+      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px;">Ve al apartado <strong>📋 Ejercicios</strong> para armar tu lista personal y empezar a entrenar.</p>
+      <button style="margin:0; width:auto; padding:10px 18px;" onclick="switchTab('tab-exercises', document.getElementById('btn-tab-exercises'))">Ir a Mis Ejercicios →</button>
+    </div>
+
+    <div class="card" id="trainingFormCard">
       <h2>
         <span>Registrar Serie</span>
         <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;" id="todayDateLabel"></span>
       </h2>
 
-      <label>Seleccionar o Crear Ejercicio</label>
-      <div style="display:flex; gap:6px;">
-        <select id="exerciseSelect" onchange="onExerciseChange()"></select>
-        <button class="btn-sec" style="margin:0; width:auto; white-space:nowrap;" onclick="toggleNewExercise()">+ Nuevo</button>
-      </div>
-
-      <div id="newExBox" style="display:none; margin-top:8px; gap:6px;">
-        <input type="text" id="newExerciseInput" placeholder="Ej: Press Inclinado Mancuernas">
-        <button style="margin:0; width:auto; padding:0 16px;" onclick="addNewExercise()">Guardar</button>
-      </div>
+      <label>Elegir de Mis Ejercicios</label>
+      <select id="exerciseSelect" onchange="onExerciseChange()"></select>
 
       <!-- Recordatorio de la última sesión de este ejercicio -->
       <div id="lastSessionContainer" class="last-workout-box"></div>
@@ -121,11 +130,11 @@
       <div class="row-4">
         <div>
           <label>Peso (kg)</label>
-          <input type="number" id="weightInput" step="0.5" inputmode="decimal" placeholder="24">
+          <input type="number" id="weightInput" step="0.5" inputmode="decimal" placeholder="Ej: 20">
         </div>
         <div>
           <label>Reps</label>
-          <input type="number" id="repsInput" inputmode="numeric" placeholder="8">
+          <input type="number" id="repsInput" inputmode="numeric" placeholder="Ej: 8">
         </div>
         <div>
           <label>RIR (Recámara)</label>
@@ -139,7 +148,7 @@
         </div>
         <div>
           <label>Fecha</label>
-          <input type="date" id="dateInput">
+          <input type="date" id="dateInput" onchange="renderLastSession()">
         </div>
       </div>
 
@@ -147,7 +156,7 @@
     </div>
 
     <div class="card">
-      <h2>Series Registradas</h2>
+      <h2>Historial de Series</h2>
       <table>
         <thead>
           <tr>
@@ -163,11 +172,29 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 2: PROGRESO GRÁFICO -->
+  <!-- PESTAÑA 2: MIS EJERCICIOS (CATÁLOGO PERSONAL) -->
+  <div id="tab-exercises" class="section">
+    <div class="card">
+      <h2>Agregar Nuevo Ejercicio</h2>
+      <label>Nombre del ejercicio</label>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="newExerciseInput" placeholder="Ej: Press Banca, Sentadilla..." onkeypress="if(event.key === 'Enter') addNewExercise()">
+        <button style="margin:0; width:auto; padding:0 18px; white-space:nowrap;" onclick="addNewExercise()">＋ Agregar</button>
+      </div>
+      <p class="small-note">Todos los ejercicios que agregues aquí quedarán guardados en tu teléfono para elegirlos cada vez que entrenes.</p>
+    </div>
+
+    <div class="card">
+      <h2>Mis Ejercicios Guardados (<span id="exerciseCount">0</span>)</h2>
+      <div id="myExercisesList"></div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3: PROGRESO GRÁFICO -->
   <div id="tab-progress" class="section">
     <div class="card">
       <h2>Evolución por Ejercicio</h2>
-      <label>Ejercicio a analizar</label>
+      <label>Seleccionar ejercicio</label>
       <select id="chartExerciseSelect" onchange="renderCharts()"></select>
 
       <label>Métrica del Gráfico</label>
@@ -180,7 +207,7 @@
       <div style="margin-top: 14px;">
         <canvas id="workoutChart" height="230"></canvas>
       </div>
-      <p class="small-note">💡 El <strong>1RM Efectivo</strong> suma tus repeticiones hechas + tu RIR para mostrar tu ganancia real de fuerza aunque no vayas al fallo.</p>
+      <p class="small-note">💡 El <strong>1RM Efectivo</strong> calcula tu fuerza máxima sumando las repeticiones hechas más el RIR.</p>
     </div>
 
     <div class="card">
@@ -189,7 +216,7 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 3: BANDA / FITBIT -->
+  <!-- PESTAÑA 4: BANDA / FITBIT -->
   <div id="tab-band" class="section">
     <div class="bio-grid">
       <div class="card" style="margin:0;">
@@ -218,34 +245,17 @@
         </div>
       </div>
       <button style="background:var(--accent-green);" onclick="saveManualBio()">Guardar Datos de Hoy</button>
-      <p class="small-note">
-        <strong>¿Cómo conectar tu Fitbit u otra banda?</strong><br>
-        • <strong>Modo Universal (Android/PC):</strong> Activa "Transmitir FC" en los ajustes de tu Fitbit, Mi Band, Amazfit o Garmin y toca <em>Conectar Banda (BLE)</em>.<br>
-        • <strong>Modo iPhone / Fitbit Cloud:</strong> Puedes ingresar un Token/Client ID de Fitbit o anotar tus pasos al final de la rutina para ver la gráfica en la pestaña Progreso.
-      </p>
     </div>
   </div>
 
 <script>
-  // Solicitar almacenamiento persistente en el navegador del teléfono
   if (navigator.storage && navigator.storage.persist) {
     navigator.storage.persist();
   }
 
-  const DEFAULT_EXERCISES = [
-    "Press de Banca con Mancuernas",
-    "Press Inclinado con Mancuernas",
-    "Remo con Mancuerna",
-    "Press Militar",
-    "Sentadilla Búlgara",
-    "Peso Muerto Rumano",
-    "Dominadas / Jalón",
-    "Curl de Bíceps",
-    "Elevaciones Laterales"
-  ];
-
-  let appData = JSON.parse(localStorage.getItem('gymTrackerV2')) || {
-    exercises: DEFAULT_EXERCISES,
+  // Lista de ejercicios vacía por defecto para que cada persona arme la suya
+  let appData = JSON.parse(localStorage.getItem('gymTrackerV3')) || {
+    exercises: [],
     sets: [],
     biometrics: {},
     fitbitToken: ""
@@ -259,8 +269,9 @@
   let bioChartInstance = null;
 
   function saveToLocal() {
-    localStorage.setItem('gymTrackerV2', JSON.stringify(appData));
+    localStorage.setItem('gymTrackerV3', JSON.stringify(appData));
     populateExerciseSelects();
+    renderMyExercisesList();
     renderLastSession();
     renderSetsTable();
     renderBioSummary();
@@ -271,43 +282,76 @@
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
     if (tabId === 'tab-progress') renderCharts();
   }
 
   function populateExerciseSelects() {
     const sel1 = document.getElementById('exerciseSelect');
     const sel2 = document.getElementById('chartExerciseSelect');
-    const val1 = sel1.value;
-    const val2 = sel2.value;
+    const banner = document.getElementById('noExercisesBanner');
+    const formCard = document.getElementById('trainingFormCard');
+
+    const prev1 = sel1.value;
+    const prev2 = sel2.value;
+
+    if (appData.exercises.length === 0) {
+      banner.style.display = 'block';
+      formCard.style.opacity = '0.5';
+      sel1.innerHTML = `<option value="">-- Primero agrega ejercicios en 📋 Ejercicios --</option>`;
+      sel2.innerHTML = `<option value="">-- Sin ejercicios --</option>`;
+      return;
+    }
+
+    banner.style.display = 'none';
+    formCard.style.opacity = '1';
 
     const optionsHTML = appData.exercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
     sel1.innerHTML = optionsHTML;
     sel2.innerHTML = optionsHTML;
 
-    if (appData.exercises.includes(val1)) sel1.value = val1;
-    if (appData.exercises.includes(val2)) sel2.value = val2;
+    if (appData.exercises.includes(prev1)) sel1.value = prev1;
+    if (appData.exercises.includes(prev2)) sel2.value = prev2;
   }
 
-  function toggleNewExercise() {
-    const box = document.getElementById('newExBox');
-    box.style.display = box.style.display === 'none' ? 'flex' : 'none';
-    if (box.style.display === 'flex') document.getElementById('newExerciseInput').focus();
+  function renderMyExercisesList() {
+    const listContainer = document.getElementById('myExercisesList');
+    document.getElementById('exerciseCount').innerText = appData.exercises.length;
+
+    if (appData.exercises.length === 0) {
+      listContainer.innerHTML = `<p style="color:var(--muted); font-size:0.85rem; text-align:center; padding:12px;">Aún no has agregado ningún ejercicio. Escribe el primero arriba.</p>`;
+      return;
+    }
+
+    listContainer.innerHTML = appData.exercises.map((ex, index) => `
+      <div class="exercise-item">
+        <span style="font-weight:600;">${ex}</span>
+        <button class="btn-sec" style="margin:0; width:auto; color:var(--accent-red); border-color:#334155;" onclick="deleteExercise(${index})">Eliminar</button>
+      </div>
+    `).join('');
   }
 
   function addNewExercise() {
     const input = document.getElementById('newExerciseInput');
     const name = input.value.trim();
     if (!name) return;
-    if (!appData.exercises.includes(name)) {
-      appData.exercises.push(name);
+    if (appData.exercises.some(e => e.toLowerCase() === name.toLowerCase())) {
+      alert("Ese ejercicio ya está en tu lista.");
+      return;
     }
+    appData.exercises.push(name);
     input.value = '';
-    document.getElementById('newExBox').style.display = 'none';
     saveToLocal();
     document.getElementById('exerciseSelect').value = name;
     document.getElementById('chartExerciseSelect').value = name;
     onExerciseChange();
+  }
+
+  function deleteExercise(index) {
+    const exName = appData.exercises[index];
+    if (!confirm(`¿Seguro que quieres quitar "${exName}" de tu lista de ejercicios?`)) return;
+    appData.exercises.splice(index, 1);
+    saveToLocal();
   }
 
   function onExerciseChange() {
@@ -316,10 +360,15 @@
     renderLastSession();
   }
 
-  // Muestra qué hiciste en el entrenamiento anterior de ese ejercicio
   function renderLastSession() {
     const ex = document.getElementById('exerciseSelect').value;
     const container = document.getElementById('lastSessionContainer');
+
+    if (!ex) {
+      container.innerHTML = `<span style="color:var(--muted);">Agrega un ejercicio en la pestaña 📋 Ejercicios para comenzar.</span>`;
+      return;
+    }
+
     const exSets = appData.sets.filter(s => s.exercise === ex);
 
     if (exSets.length === 0) {
@@ -327,7 +376,6 @@
       return;
     }
 
-    // Buscar la última fecha registrada (anterior a hoy, o de hoy si es la única)
     const dates = [...new Set(exSets.map(s => s.date))].sort();
     const currentInputDate = document.getElementById('dateInput').value;
     const pastDates = dates.filter(d => d < currentInputDate);
@@ -356,17 +404,22 @@
 
   function saveSet() {
     const exercise = document.getElementById('exerciseSelect').value;
+    if (!exercise) {
+      alert("Primero agrega al menos un ejercicio en la pestaña '📋 Ejercicios'.");
+      switchTab('tab-exercises', document.getElementById('btn-tab-exercises'));
+      return;
+    }
+
     const weight = parseFloat(document.getElementById('weightInput').value);
     const reps = parseInt(document.getElementById('repsInput').value);
     const rir = parseInt(document.getElementById('rirInput').value);
     const date = document.getElementById('dateInput').value;
 
-    if (!exercise || isNaN(weight) || isNaN(reps) || !date) {
+    if (isNaN(weight) || isNaN(reps) || !date) {
       alert("Por favor ingresa el peso y las repeticiones.");
       return;
     }
 
-    // 1RM Efectivo considerando RIR (Fórmula de Epley con Reps en Reserva)
     const effective1RM = +(weight * (1 + (reps + rir) / 30)).toFixed(1);
 
     appData.sets.push({
@@ -390,7 +443,7 @@
 
   function renderSetsTable() {
     const tbody = document.getElementById('setsTableBody');
-    const recent = [...appData.sets].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id).slice(0, 20);
+    const recent = [...appData.sets].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id).slice(0, 25);
 
     if (recent.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Aún no hay series guardadas.</td></tr>`;
@@ -413,7 +466,7 @@
   function renderCharts() {
     const exercise = document.getElementById('chartExerciseSelect').value;
     const metric = document.getElementById('chartMetricSelect').value;
-    const filtered = appData.sets.filter(s => s.exercise === exercise);
+    const filtered = exercise ? appData.sets.filter(s => s.exercise === exercise) : [];
 
     const byDate = {};
     filtered.forEach(s => {
@@ -435,7 +488,7 @@
       data: {
         labels: dates,
         datasets: [{
-          label: exercise,
+          label: exercise || 'Sin ejercicio seleccionado',
           data: values,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.18)',
@@ -456,7 +509,6 @@
       }
     });
 
-    // Gráfico de Biometría (Pasos y Pulso)
     const bioDates = Object.keys(appData.biometrics).sort();
     const stepsData = bioDates.map(d => appData.biometrics[d].steps || 0);
     const hrData = bioDates.map(d => appData.biometrics[d].hr || null);
@@ -497,7 +549,6 @@
     });
   }
 
-  // Biometría: BLE Estándar + Fitbit Web API + Manual
   function saveManualBio() {
     const date = document.getElementById('dateInput').value || todayStr;
     if (!appData.biometrics[date]) appData.biometrics[date] = { steps: 0, hr: null };
@@ -543,17 +594,17 @@
         const date = document.getElementById('dateInput').value || todayStr;
         if (!appData.biometrics[date]) appData.biometrics[date] = { steps: 0, hr: hr };
         else appData.biometrics[date].hr = hr;
-        localStorage.setItem('gymTrackerV2', JSON.stringify(appData));
+        localStorage.setItem('gymTrackerV3', JSON.stringify(appData));
       });
     } catch (err) {
-      console.log("BLE cancelado o no disponible:", err);
+      console.log("BLE cancelado:", err);
     }
   }
 
   async function syncFitbitCloud() {
     let token = appData.fitbitToken;
     if (!token) {
-      token = prompt("Ingresa tu Access Token de la API de Fitbit (desde dev.fitbit.com) para importar pasos y pulso automáticamente:");
+      token = prompt("Ingresa tu Access Token de la API de Fitbit (desde dev.fitbit.com) para importar pasos y pulso:");
       if (!token) return;
       appData.fitbitToken = token.trim();
     }
@@ -561,7 +612,7 @@
       const res = await fetch(`https://api.fitbit.com/1/user/-/activities/date/${todayStr}.json`, {
         headers: { 'Authorization': `Bearer ${appData.fitbitToken}` }
       });
-      if (!res.ok) throw new Error("Token inválido o expirado");
+      if (!res.ok) throw new Error("Token inválido");
       const data = await res.json();
       const steps = data?.summary?.steps || 0;
       const restingHR = data?.summary?.restingHeartRate || null;
@@ -572,11 +623,10 @@
       alert(`¡Sincronizado con Fitbit! Pasos hoy: ${steps}`);
     } catch (e) {
       appData.fitbitToken = "";
-      alert("No se pudo conectar con Fitbit API. Verifica el token o ingresa los pasos manualmente abajo.");
+      alert("No se pudo conectar con Fitbit API. Verifica el token o ingresa los pasos manualmente.");
     }
   }
 
-  // Backup y Restauración (para cambiar de teléfono sin perder datos)
   function exportBackup() {
     const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
