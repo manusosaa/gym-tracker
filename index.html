@@ -17,26 +17,27 @@
       --accent-green: #34d399;
       --accent-red: #f87171;
       --accent-amber: #fbbf24;
+      --accent-purple: #a78bfa;
       --text: #f8fafc;
       --muted: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 80px; max-width: 650px; margin: 0 auto; }
+    body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 90px; max-width: 650px; margin: 0 auto; }
     
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-top: 6px; }
-    h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-top: 4px; }
+    h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
     
-    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card); padding: 5px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #1e293b; }
-    .tab-btn { background: transparent; color: var(--muted); border: none; padding: 10px 4px; font-size: 0.78rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin: 0; }
+    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: var(--card); padding: 5px; border-radius: 12px; margin-bottom: 14px; border: 1px solid #1e293b; }
+    .tab-btn { background: transparent; color: var(--muted); border: none; padding: 10px 4px; font-size: 0.76rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin: 0; }
     .tab-btn.active { background: var(--accent); color: #090d16; }
 
     .section { display: none; }
     .section.active { display: block; }
 
-    .card { background: var(--card); padding: 16px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #1e293b; }
-    .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+    .card { background: var(--card); padding: 15px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #1e293b; }
+    .card h2 { font-size: 0.98rem; margin-bottom: 10px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
     
-    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; font-weight: 600; }
+    label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; font-weight: 600; }
     input, select, button {
       width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #334155;
       background: #090d16; color: var(--text); font-size: 16px;
@@ -44,48 +45,75 @@
     input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
     button {
       background: var(--accent); color: #090d16; font-weight: 700; border: none;
-      cursor: pointer; margin-top: 14px; transition: transform 0.1s;
+      cursor: pointer; margin-top: 12px; transition: transform 0.1s;
     }
     button:active { transform: scale(0.98); }
-    .btn-sec { background: var(--card-alt); color: var(--text); border: 1px solid #334155; font-size: 0.8rem; padding: 7px 10px; }
+    .btn-sec { background: var(--card-alt); color: var(--text); border: 1px solid #334155; font-size: 0.8rem; padding: 7px 10px; margin: 0; width: auto; }
 
-    .row-4 { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.3fr; gap: 8px; }
-    @media (max-width: 480px) { .row-4 { grid-template-columns: 1fr 1fr; } }
+    .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
+    /* Barra de Rutina Activa en Entrenar */
+    .routine-queue {
+      display: flex; gap: 8px; overflow-x: auto; padding: 8px 2px 10px 2px; margin-top: 6px;
+      scrollbar-width: none;
+    }
+    .routine-queue::-webkit-scrollbar { display: none; }
+    .routine-chip {
+      flex: 0 0 auto; background: #090d16; border: 1px solid #334155; border-radius: 10px;
+      padding: 8px 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 5px;
+      min-width: 135px; cursor: pointer;
+    }
+    .routine-chip.active { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); }
+    .routine-chip.done { border-color: var(--accent-green); }
+    .chip-controls { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--muted); }
+    .order-btn { background: #1e293b; color: var(--text); border: none; border-radius: 5px; padding: 2px 7px; font-size: 0.75rem; margin: 0; width: auto; }
+
+    /* Caja de última sesión y sobrecarga */
     .last-workout-box {
       background: #0f172a; border-left: 4px solid var(--accent-amber);
-      padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 0.85rem;
+      padding: 11px; border-radius: 8px; margin-top: 10px; font-size: 0.83rem;
     }
     .last-set-pill {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--card-alt); padding: 6px 10px; border-radius: 8px;
-      margin: 4px 4px 0 0; font-size: 0.8rem; cursor: pointer; border: 1px solid #334155;
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--card-alt); padding: 6px 9px; border-radius: 8px;
+      margin: 5px 5px 0 0; font-size: 0.78rem; cursor: pointer; border: 1px solid #334155;
     }
-    .last-set-pill:active { background: var(--accent); color: #000; }
-
-    .rir-badge {
-      padding: 2px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
-      background: #334155; color: var(--accent-amber);
+    .overload-tip {
+      margin-top: 8px; padding-top: 7px; border-top: 1px dashed #334155;
+      color: var(--accent-green); font-size: 0.78rem; font-weight: 600;
     }
 
-    .exercise-item {
+    /* Cronómetro de Descanso */
+    .timer-bar {
+      background: linear-gradient(90deg, #0f172a, #1e293b);
+      border: 1px solid var(--accent); border-radius: 12px;
+      padding: 10px 12px; margin-bottom: 12px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .timer-time { font-size: 1.35rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+    .rir-badge { padding: 2px 6px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; background: #334155; color: var(--accent-amber); }
+    .pr-badge { padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; background: rgba(251, 191, 36, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+
+    .list-item {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; background: #090d16; border: 1px solid #1e293b;
-      border-radius: 10px; margin-bottom: 8px;
+      padding: 9px 11px; background: #090d16; border: 1px solid #1e293b;
+      border-radius: 10px; margin-bottom: 7px; font-size: 0.88rem;
     }
 
     .empty-banner {
       background: #1e293b; border: 1px dashed var(--accent); border-radius: 12px;
-      padding: 16px; text-align: center; margin-bottom: 12px;
+      padding: 15px; text-align: center; margin-bottom: 12px;
     }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
-    th, td { text-align: left; padding: 9px 6px; border-bottom: 1px solid #1e293b; }
-    th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; }
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.82rem; }
+    th, td { text-align: left; padding: 8px 5px; border-bottom: 1px solid #1e293b; }
+    th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
 
     .bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .bio-val { font-size: 1.6rem; font-weight: 800; margin: 4px 0; }
-    .small-note { font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 8px; }
+    .bio-val { font-size: 1.5rem; font-weight: 800; margin: 4px 0; }
+    .small-note { font-size: 0.74rem; color: var(--muted); line-height: 1.4; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -93,16 +121,29 @@
   <header>
     <h1>⚡ GymTracker</h1>
     <div style="display:flex; gap:6px;">
-      <button class="btn-sec" style="margin:0; width:auto;" onclick="exportBackup()">💾 Backup</button>
-      <button class="btn-sec" style="margin:0; width:auto;" onclick="document.getElementById('importFile').click()">📂 Cargar</button>
+      <button class="btn-sec" onclick="exportBackup()">💾 Backup</button>
+      <button class="btn-sec" onclick="document.getElementById('importFile').click()">📂 Cargar</button>
       <input type="file" id="importFile" style="display:none" accept=".json" onchange="importBackup(event)">
     </div>
   </header>
 
-  <!-- 4 Pestañas Principales -->
+  <!-- Cronómetro de Descanso Inteligente -->
+  <div id="restTimerBar" class="timer-bar" style="display:none;">
+    <div>
+      <div style="font-size:0.7rem; color:var(--muted); text-transform:uppercase; font-weight:700;">⏱ Descanso Activo</div>
+      <div class="timer-time" id="timerDisplay">01:30</div>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button class="btn-sec" onclick="adjustTimer(-15)">-15s</button>
+      <button class="btn-sec" onclick="adjustTimer(15)">+15s</button>
+      <button class="btn-sec" style="color:var(--accent-red);" onclick="stopTimer()">✕</button>
+    </div>
+  </div>
+
+  <!-- Navegación -->
   <div class="tabs">
     <button id="btn-tab-train" class="tab-btn active" onclick="switchTab('tab-train', this)">🏋️ Entrenar</button>
-    <button id="btn-tab-exercises" class="tab-btn" onclick="switchTab('tab-exercises', this)">📋 Ejercicios</button>
+    <button id="btn-tab-exercises" class="tab-btn" onclick="switchTab('tab-exercises', this)">📋 Rutinas</button>
     <button id="btn-tab-progress" class="tab-btn" onclick="switchTab('tab-progress', this)">📈 Progreso</button>
     <button id="btn-tab-band" class="tab-btn" onclick="switchTab('tab-band', this)">⌚ Salud</button>
   </div>
@@ -110,31 +151,63 @@
   <!-- PESTAÑA 1: ENTRENAR -->
   <div id="tab-train" class="section active">
     <div id="noExercisesBanner" class="empty-banner" style="display:none;">
-      <p style="margin-bottom:10px; font-weight:600;">👋 ¡Bienvenido! Aún no has cargado tus ejercicios.</p>
-      <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px;">Ve al apartado <strong>📋 Ejercicios</strong> para armar tu lista personal y empezar a entrenar.</p>
-      <button style="margin:0; width:auto; padding:10px 18px;" onclick="switchTab('tab-exercises', document.getElementById('btn-tab-exercises'))">Ir a Mis Ejercicios →</button>
+      <p style="margin-bottom:8px; font-weight:600;">👋 ¡Aún no tienes ejercicios cargados!</p>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">Ve a <strong>📋 Rutinas</strong> para cargar tus ejercicios y armar tus rutinas por día.</p>
+      <button style="margin:0; width:auto; padding:9px 16px;" onclick="switchTab('tab-exercises', document.getElementById('btn-tab-exercises'))">Ir a Rutinas y Ejercicios →</button>
     </div>
 
-    <div class="card" id="trainingFormCard">
+    <!-- Selector de Rutina del Día -->
+    <div class="card" id="routineSelectorCard">
       <h2>
-        <span>Registrar Serie</span>
-        <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;" id="todayDateLabel"></span>
+        <span>Modo de Entrenamiento</span>
+        <span style="font-size:0.74rem; color:var(--muted); font-weight:normal;" id="todayDateLabel"></span>
       </h2>
+      <div class="row-grid">
+        <div>
+          <label style="margin-top:0;">Rutina Activa</label>
+          <select id="activeRoutineSelect" onchange="onRoutineSelectChange()"></select>
+        </div>
+        <div>
+          <label style="margin-top:0;">Auto-Descanso al guardar</label>
+          <select id="restDurationSelect">
+            <option value="0">Apagado</option>
+            <option value="60">1:00 min (60s)</option>
+            <option value="90" selected>1:30 min (90s)</option>
+            <option value="120">2:00 min (120s)</option>
+            <option value="180">3:00 min (180s)</option>
+          </select>
+        </div>
+      </div>
 
-      <label>Elegir de Mis Ejercicios</label>
+      <!-- Cola de ejercicios de la rutina (con botones para cambiar el orden en vivo) -->
+      <div id="routineQueueBox" style="display:none; margin-top:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.75rem; color:var(--muted); font-weight:600;">ORDEN DE HOY (toca ◀ ▶ si necesitas alterar el orden):</span>
+          <button class="btn-sec" style="padding:3px 8px; font-size:0.72rem;" onclick="nextRoutineExercise()">Siguiente ⏭</button>
+        </div>
+        <div id="routineQueueList" class="routine-queue"></div>
+      </div>
+    </div>
+
+    <!-- Formulario de Serie -->
+    <div class="card" id="trainingFormCard">
+      <h2>Registrar Serie</h2>
+
+      <label style="margin-top:0;">Ejercicio Actual</label>
       <select id="exerciseSelect" onchange="onExerciseChange()"></select>
 
-      <!-- Recordatorio de la última sesión de este ejercicio -->
+      <!-- Última sesión + Sugerencia de sobrecarga -->
       <div id="lastSessionContainer" class="last-workout-box"></div>
 
-      <div class="row-4">
+      <div class="row-3">
         <div>
           <label>Peso (kg)</label>
-          <input type="number" id="weightInput" step="0.5" inputmode="decimal" placeholder="Ej: 20">
+          <!-- text + inputmode decimal permite usar la coma (,) del teclado iPhone -->
+          <input type="text" id="weightInput" inputmode="decimal" placeholder="Ej: 13,5" oninput="sanitizeDecimal(this)">
         </div>
         <div>
           <label>Reps</label>
-          <input type="number" id="repsInput" inputmode="numeric" placeholder="Ej: 8">
+          <input type="text" id="repsInput" inputmode="numeric" placeholder="Ej: 8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div>
           <label>RIR (Recámara)</label>
@@ -146,9 +219,20 @@
             <option value="4">RIR 4+</option>
           </select>
         </div>
+      </div>
+
+      <div class="row-grid">
+        <div>
+          <label>Tipo de Serie</label>
+          <select id="setTypeInput">
+            <option value="work" selected>🔥 Serie Efectiva</option>
+            <option value="warmup">🟡 Calentamiento</option>
+            <option value="dropset">⚡ Drop Set / Rest-Pause</option>
+          </select>
+        </div>
         <div>
           <label>Fecha</label>
-          <input type="date" id="dateInput" onchange="renderLastSession()">
+          <input type="date" id="dateInput" onchange="onDateChange()">
         </div>
       </div>
 
@@ -162,7 +246,7 @@
           <tr>
             <th>Fecha</th>
             <th>Ejercicio</th>
-            <th>Serie</th>
+            <th>Peso × Reps</th>
             <th>RIR</th>
             <th></th>
           </tr>
@@ -172,20 +256,39 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 2: MIS EJERCICIOS (CATÁLOGO PERSONAL) -->
+  <!-- PESTAÑA 2: MIS EJERCICIOS Y ARMADOR DE RUTINAS -->
   <div id="tab-exercises" class="section">
+    <!-- Crear / Editar Rutina -->
     <div class="card">
-      <h2>Agregar Nuevo Ejercicio</h2>
-      <label>Nombre del ejercicio</label>
-      <div style="display:flex; gap:8px;">
-        <input type="text" id="newExerciseInput" placeholder="Ej: Press Banca, Sentadilla..." onkeypress="if(event.key === 'Enter') addNewExercise()">
-        <button style="margin:0; width:auto; padding:0 18px; white-space:nowrap;" onclick="addNewExercise()">＋ Agregar</button>
+      <h2>🗂️ Crear o Modificar Rutina</h2>
+      <label style="margin-top:0;">Nombre de la Rutina</label>
+      <input type="text" id="routineNameInput" placeholder="Ej: Día 1 - Empuje / Torso">
+
+      <label>Agregar ejercicio a esta rutina</label>
+      <div style="display:flex; gap:6px;">
+        <select id="routineAddExSelect"></select>
+        <button style="margin:0; width:auto; padding:0 14px; white-space:nowrap;" onclick="addExToDraftRoutine()">＋ Añadir</button>
       </div>
-      <p class="small-note">Todos los ejercicios que agregues aquí quedarán guardados en tu teléfono para elegirlos cada vez que entrenes.</p>
+
+      <div id="draftRoutineList" style="margin-top:10px;"></div>
+
+      <button style="background:var(--accent-green);" onclick="saveRoutine()">💾 Guardar Rutina</button>
+      <p class="small-note">Puedes reordenar los ejercicios con ⬆️ y ⬇️ antes de guardar o durante el entrenamiento.</p>
     </div>
 
+    <!-- Lista de Rutinas Guardadas -->
     <div class="card">
-      <h2>Mis Ejercicios Guardados (<span id="exerciseCount">0</span>)</h2>
+      <h2>Mis Rutinas Guardadas (<span id="routineCount">0</span>)</h2>
+      <div id="savedRoutinesList"></div>
+    </div>
+
+    <!-- Catálogo de Ejercicios Individuales -->
+    <div class="card">
+      <h2>➕ Catálogo de Mis Ejercicios (<span id="exerciseCount">0</span>)</h2>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <input type="text" id="newExerciseInput" placeholder="Ej: Press Banca con Mancuernas" onkeypress="if(event.key === 'Enter') addNewExercise()">
+        <button style="margin:0; width:auto; padding:0 16px; white-space:nowrap;" onclick="addNewExercise()">＋ Crear</button>
+      </div>
       <div id="myExercisesList"></div>
     </div>
   </div>
@@ -194,7 +297,7 @@
   <div id="tab-progress" class="section">
     <div class="card">
       <h2>Evolución por Ejercicio</h2>
-      <label>Seleccionar ejercicio</label>
+      <label style="margin-top:0;">Seleccionar ejercicio</label>
       <select id="chartExerciseSelect" onchange="renderCharts()"></select>
 
       <label>Métrica del Gráfico</label>
@@ -207,7 +310,7 @@
       <div style="margin-top: 14px;">
         <canvas id="workoutChart" height="230"></canvas>
       </div>
-      <p class="small-note">💡 El <strong>1RM Efectivo</strong> calcula tu fuerza máxima sumando las repeticiones hechas más el RIR.</p>
+      <p class="small-note">💡 Solo se grafican las series efectivas y drop sets (el calentamiento no altera tu récord).</p>
     </div>
 
     <div class="card">
@@ -216,32 +319,32 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 4: BANDA / FITBIT -->
+  <!-- PESTAÑA 4: SALUD / FITBIT -->
   <div id="tab-band" class="section">
     <div class="bio-grid">
       <div class="card" style="margin:0;">
         <div style="font-size:0.75rem; color:var(--muted);">RITMO CARDÍACO</div>
         <div class="bio-val" id="liveHR" style="color:var(--accent-red);">-- <span style="font-size:0.9rem">bpm</span></div>
-        <button class="btn-sec" style="margin-top:6px; background:var(--accent-red); color:#000; border:none; font-weight:700;" onclick="connectBLEHeartRate()">📡 Conectar Banda (BLE)</button>
+        <button class="btn-sec" style="margin-top:6px; width:100%; background:var(--accent-red); color:#000; border:none; font-weight:700;" onclick="connectBLEHeartRate()">📡 Conectar Banda (BLE)</button>
       </div>
 
       <div class="card" style="margin:0;">
         <div style="font-size:0.75rem; color:var(--muted);">PASOS HOY</div>
         <div class="bio-val" id="todaySteps" style="color:var(--accent-green);">0</div>
-        <button class="btn-sec" style="margin-top:6px;" onclick="syncFitbitCloud()">☁️ Sync Fitbit Web</button>
+        <button class="btn-sec" style="margin-top:6px; width:100%;" onclick="syncFitbitCloud()">☁️ Sync Fitbit Web</button>
       </div>
     </div>
 
     <div class="card">
       <h2>Guardar Resumen del Día (Cualquier Banda)</h2>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+      <div class="row-grid">
         <div>
           <label>Pasos del día</label>
-          <input type="number" id="inputSteps" inputmode="numeric" placeholder="Ej: 8500">
+          <input type="text" id="inputSteps" inputmode="numeric" placeholder="Ej: 8500">
         </div>
         <div>
           <label>FC Media / Entreno (bpm)</label>
-          <input type="number" id="inputHR" inputmode="numeric" placeholder="Ej: 128">
+          <input type="text" id="inputHR" inputmode="numeric" placeholder="Ej: 128">
         </div>
       </div>
       <button style="background:var(--accent-green);" onclick="saveManualBio()">Guardar Datos de Hoy</button>
@@ -253,13 +356,21 @@
     navigator.storage.persist();
   }
 
-  // Lista de ejercicios vacía por defecto para que cada persona arme la suya
+  // Conserva los datos ya guardados en gymTrackerV3 y agrega soporte para rutinas
   let appData = JSON.parse(localStorage.getItem('gymTrackerV3')) || {
     exercises: [],
+    routines: [],
+    activeRoutineId: "free",
     sets: [],
     biometrics: {},
     fitbitToken: ""
   };
+  if (!appData.routines) appData.routines = [];
+  if (!appData.activeRoutineId) appData.activeRoutineId = "free";
+
+  let draftRoutineExercises = [];
+  let restInterval = null;
+  let remainingSeconds = 0;
 
   const todayStr = new Date().toISOString().slice(0, 10);
   document.getElementById('dateInput').value = todayStr;
@@ -268,10 +379,28 @@
   let workoutChartInstance = null;
   let bioChartInstance = null;
 
+  // Permite escribir tanto coma (13,5) como punto (13.5) en iOS y Android
+  function sanitizeDecimal(input) {
+    let val = input.value.replace(/[^0-9.,]/g, '');
+    const parts = val.split(/[.,]/);
+    if (parts.length > 2) {
+      val = parts[0] + ',' + parts.slice(1).join('');
+    }
+    input.value = val;
+  }
+
+  function parseDecimal(val) {
+    if (!val) return NaN;
+    return parseFloat(String(val).replace(',', '.'));
+  }
+
   function saveToLocal() {
     localStorage.setItem('gymTrackerV3', JSON.stringify(appData));
     populateExerciseSelects();
+    populateRoutineSelect();
+    renderRoutineQueue();
     renderMyExercisesList();
+    renderSavedRoutines();
     renderLastSession();
     renderSetsTable();
     renderBioSummary();
@@ -286,49 +415,39 @@
     if (tabId === 'tab-progress') renderCharts();
   }
 
-  function populateExerciseSelects() {
-    const sel1 = document.getElementById('exerciseSelect');
-    const sel2 = document.getElementById('chartExerciseSelect');
-    const banner = document.getElementById('noExercisesBanner');
-    const formCard = document.getElementById('trainingFormCard');
+  function onDateChange() {
+    renderRoutineQueue();
+    renderLastSession();
+    renderBioSummary();
+  }
 
-    const prev1 = sel1.value;
-    const prev2 = sel2.value;
+  // --- GESTIÓN DE EJERCICIOS ---
+  function populateExerciseSelects() {
+    const selTrain = document.getElementById('exerciseSelect');
+    const selChart = document.getElementById('chartExerciseSelect');
+    const selRoutineAdd = document.getElementById('routineAddExSelect');
+    const banner = document.getElementById('noExercisesBanner');
+
+    const prevTrain = selTrain.value;
+    const prevChart = selChart.value;
 
     if (appData.exercises.length === 0) {
       banner.style.display = 'block';
-      formCard.style.opacity = '0.5';
-      sel1.innerHTML = `<option value="">-- Primero agrega ejercicios en 📋 Ejercicios --</option>`;
-      sel2.innerHTML = `<option value="">-- Sin ejercicios --</option>`;
+      const emptyOpt = `<option value="">-- Primero crea ejercicios en 📋 Rutinas --</option>`;
+      selTrain.innerHTML = emptyOpt;
+      selChart.innerHTML = emptyOpt;
+      selRoutineAdd.innerHTML = emptyOpt;
       return;
     }
 
     banner.style.display = 'none';
-    formCard.style.opacity = '1';
-
     const optionsHTML = appData.exercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
-    sel1.innerHTML = optionsHTML;
-    sel2.innerHTML = optionsHTML;
+    selTrain.innerHTML = optionsHTML;
+    selChart.innerHTML = optionsHTML;
+    selRoutineAdd.innerHTML = optionsHTML;
 
-    if (appData.exercises.includes(prev1)) sel1.value = prev1;
-    if (appData.exercises.includes(prev2)) sel2.value = prev2;
-  }
-
-  function renderMyExercisesList() {
-    const listContainer = document.getElementById('myExercisesList');
-    document.getElementById('exerciseCount').innerText = appData.exercises.length;
-
-    if (appData.exercises.length === 0) {
-      listContainer.innerHTML = `<p style="color:var(--muted); font-size:0.85rem; text-align:center; padding:12px;">Aún no has agregado ningún ejercicio. Escribe el primero arriba.</p>`;
-      return;
-    }
-
-    listContainer.innerHTML = appData.exercises.map((ex, index) => `
-      <div class="exercise-item">
-        <span style="font-weight:600;">${ex}</span>
-        <button class="btn-sec" style="margin:0; width:auto; color:var(--accent-red); border-color:#334155;" onclick="deleteExercise(${index})">Eliminar</button>
-      </div>
-    `).join('');
+    if (appData.exercises.includes(prevTrain)) selTrain.value = prevTrain;
+    if (appData.exercises.includes(prevChart)) selChart.value = prevChart;
   }
 
   function addNewExercise() {
@@ -336,7 +455,7 @@
     const name = input.value.trim();
     if (!name) return;
     if (appData.exercises.some(e => e.toLowerCase() === name.toLowerCase())) {
-      alert("Ese ejercicio ya está en tu lista.");
+      alert("Ese ejercicio ya está en tu catálogo.");
       return;
     }
     appData.exercises.push(name);
@@ -349,28 +468,234 @@
 
   function deleteExercise(index) {
     const exName = appData.exercises[index];
-    if (!confirm(`¿Seguro que quieres quitar "${exName}" de tu lista de ejercicios?`)) return;
+    if (!confirm(`¿Quitar "${exName}" de tu catálogo de ejercicios?`)) return;
     appData.exercises.splice(index, 1);
     saveToLocal();
+  }
+
+  function renderMyExercisesList() {
+    const listContainer = document.getElementById('myExercisesList');
+    document.getElementById('exerciseCount').innerText = appData.exercises.length;
+
+    if (appData.exercises.length === 0) {
+      listContainer.innerHTML = `<p style="color:var(--muted); font-size:0.82rem; text-align:center; padding:8px;">Tu catálogo está vacío. Agrega tus ejercicios arriba.</p>`;
+      return;
+    }
+
+    listContainer.innerHTML = appData.exercises.map((ex, index) => `
+      <div class="list-item">
+        <span style="font-weight:600;">${ex}</span>
+        <button class="btn-sec" style="color:var(--accent-red);" onclick="deleteExercise(${index})">Eliminar</button>
+      </div>
+    `).join('');
+  }
+
+  // --- GESTIÓN DE RUTINAS Y CAMBIO DE ORDEN ---
+  function addExToDraftRoutine() {
+    const ex = document.getElementById('routineAddExSelect').value;
+    if (!ex) return;
+    if (!draftRoutineExercises.includes(ex)) {
+      draftRoutineExercises.push(ex);
+      renderDraftRoutine();
+    }
+  }
+
+  function moveDraftEx(idx, dir) {
+    const target = idx + dir;
+    if (target < 0 || target >= draftRoutineExercises.length) return;
+    const temp = draftRoutineExercises[idx];
+    draftRoutineExercises[idx] = draftRoutineExercises[target];
+    draftRoutineExercises[target] = temp;
+    renderDraftRoutine();
+  }
+
+  function removeDraftEx(idx) {
+    draftRoutineExercises.splice(idx, 1);
+    renderDraftRoutine();
+  }
+
+  function renderDraftRoutine() {
+    const box = document.getElementById('draftRoutineList');
+    if (draftRoutineExercises.length === 0) {
+      box.innerHTML = `<p style="font-size:0.78rem; color:var(--muted);">Aún no has añadido ejercicios a esta rutina.</p>`;
+      return;
+    }
+    box.innerHTML = draftRoutineExercises.map((ex, i) => `
+      <div class="list-item">
+        <span><strong>${i + 1}.</strong> ${ex}</span>
+        <div style="display:flex; gap:4px;">
+          <button class="btn-sec" onclick="moveDraftEx(${i}, -1)">⬆️</button>
+          <button class="btn-sec" onclick="moveDraftEx(${i}, 1)">⬇️</button>
+          <button class="btn-sec" style="color:var(--accent-red);" onclick="removeDraftEx(${i})">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function saveRoutine() {
+    const nameInput = document.getElementById('routineNameInput');
+    const name = nameInput.value.trim();
+    if (!name) return alert("Ponle un nombre a la rutina (ej: Día Empuje).");
+    if (draftRoutineExercises.length === 0) return alert("Añade al menos un ejercicio a la rutina.");
+
+    const existingIdx = appData.routines.findIndex(r => r.name.toLowerCase() === name.toLowerCase());
+    if (existingIdx >= 0) {
+      appData.routines[existingIdx].exercises = [...draftRoutineExercises];
+      appData.activeRoutineId = appData.routines[existingIdx].id;
+    } else {
+      const newRoutine = {
+        id: 'rut_' + Date.now(),
+        name,
+        exercises: [...draftRoutineExercises]
+      };
+      appData.routines.push(newRoutine);
+      appData.activeRoutineId = newRoutine.id;
+    }
+
+    nameInput.value = '';
+    draftRoutineExercises = [];
+    renderDraftRoutine();
+    saveToLocal();
+    alert(`¡Rutina "${name}" guardada!`);
+  }
+
+  function editRoutine(id) {
+    const rut = appData.routines.find(r => r.id === id);
+    if (!rut) return;
+    document.getElementById('routineNameInput').value = rut.name;
+    draftRoutineExercises = [...rut.exercises];
+    renderDraftRoutine();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function deleteRoutine(id) {
+    if (!confirm("¿Eliminar esta rutina?")) return;
+    appData.routines = appData.routines.filter(r => r.id !== id);
+    if (appData.activeRoutineId === id) appData.activeRoutineId = "free";
+    saveToLocal();
+  }
+
+  function renderSavedRoutines() {
+    const container = document.getElementById('savedRoutinesList');
+    document.getElementById('routineCount').innerText = appData.routines.length;
+
+    if (appData.routines.length === 0) {
+      container.innerHTML = `<p style="color:var(--muted); font-size:0.82rem; text-align:center; padding:8px;">No has creado rutinas todavía.</p>`;
+      return;
+    }
+
+    container.innerHTML = appData.routines.map(r => `
+      <div class="list-item" style="flex-direction:column; align-items:flex-start; gap:6px;">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+          <strong style="color:var(--accent);">${r.name}</strong>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-sec" onclick="editRoutine('${r.id}')">✏️ Editar</button>
+            <button class="btn-sec" style="color:var(--accent-red);" onclick="deleteRoutine('${r.id}')">✕</button>
+          </div>
+        </div>
+        <div style="font-size:0.78rem; color:var(--muted);">${r.exercises.map((e, i) => `${i+1}.${e}`).join(' → ')}</div>
+      </div>
+    `).join('');
+  }
+
+  function populateRoutineSelect() {
+    const sel = document.getElementById('activeRoutineSelect');
+    let html = `<option value="free">🔓 Entrenamiento Libre (Todos)</option>`;
+    html += appData.routines.map(r => `<option value="${r.id}">📋 ${r.name}</option>`).join('');
+    sel.innerHTML = html;
+    sel.value = appData.activeRoutineId || "free";
+  }
+
+  function onRoutineSelectChange() {
+    appData.activeRoutineId = document.getElementById('activeRoutineSelect').value;
+    const rut = appData.routines.find(r => r.id === appData.activeRoutineId);
+    if (rut && rut.exercises.length > 0) {
+      document.getElementById('exerciseSelect').value = rut.exercises[0];
+    }
+    saveToLocal();
+  }
+
+  // Cola interactiva de la rutina activa (permite cambiar el orden en el gimnasio)
+  function renderRoutineQueue() {
+    const box = document.getElementById('routineQueueBox');
+    const list = document.getElementById('routineQueueList');
+    const rut = appData.routines.find(r => r.id === appData.activeRoutineId);
+
+    if (!rut || rut.exercises.length === 0) {
+      box.style.display = 'none';
+      return;
+    }
+
+    box.style.display = 'block';
+    const currentEx = document.getElementById('exerciseSelect').value;
+    const currentDate = document.getElementById('dateInput').value;
+
+    list.innerHTML = rut.exercises.map((ex, idx) => {
+      const setsToday = appData.sets.filter(s => s.exercise === ex && s.date === currentDate && s.type !== 'warmup').length;
+      const isSelected = ex === currentEx;
+      return `
+        <div class="routine-chip ${isSelected ? 'active' : ''} ${setsToday > 0 ? 'done' : ''}" onclick="selectExerciseFromRoutine('${ex}')">
+          <div style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${idx + 1}. ${ex}
+          </div>
+          <div class="chip-controls">
+            <span style="color:${setsToday > 0 ? 'var(--accent-green)' : 'var(--muted)'};">
+              ${setsToday > 0 ? `✓ ${setsToday} series` : 'Pendiente'}
+            </span>
+            <div style="display:flex; gap:3px;" onclick="event.stopPropagation();">
+              <button class="order-btn" onclick="reorderActiveRoutine(${idx}, -1)">◀</button>
+              <button class="order-btn" onclick="reorderActiveRoutine(${idx}, 1)">▶</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function selectExerciseFromRoutine(ex) {
+    document.getElementById('exerciseSelect').value = ex;
+    onExerciseChange();
+  }
+
+  function reorderActiveRoutine(idx, dir) {
+    const rut = appData.routines.find(r => r.id === appData.activeRoutineId);
+    if (!rut) return;
+    const target = idx + dir;
+    if (target < 0 || target >= rut.exercises.length) return;
+    const temp = rut.exercises[idx];
+    rut.exercises[idx] = rut.exercises[target];
+    rut.exercises[target] = temp;
+    saveToLocal();
+  }
+
+  function nextRoutineExercise() {
+    const rut = appData.routines.find(r => r.id === appData.activeRoutineId);
+    if (!rut || rut.exercises.length === 0) return;
+    const currentEx = document.getElementById('exerciseSelect').value;
+    const idx = rut.exercises.indexOf(currentEx);
+    const nextIdx = (idx + 1) % rut.exercises.length;
+    document.getElementById('exerciseSelect').value = rut.exercises[nextIdx];
+    onExerciseChange();
   }
 
   function onExerciseChange() {
     const selected = document.getElementById('exerciseSelect').value;
     document.getElementById('chartExerciseSelect').value = selected;
+    renderRoutineQueue();
     renderLastSession();
   }
 
+  // --- MEMORIA DE ÚLTIMA SESIÓN + ASESOR DE SOBRECARGA PROGRESIVA ---
   function renderLastSession() {
     const ex = document.getElementById('exerciseSelect').value;
     const container = document.getElementById('lastSessionContainer');
 
     if (!ex) {
-      container.innerHTML = `<span style="color:var(--muted);">Agrega un ejercicio en la pestaña 📋 Ejercicios para comenzar.</span>`;
+      container.innerHTML = `<span style="color:var(--muted);">Crea o selecciona un ejercicio para comenzar.</span>`;
       return;
     }
 
     const exSets = appData.sets.filter(s => s.exercise === ex);
-
     if (exSets.length === 0) {
       container.innerHTML = `<span style="color:var(--muted);">Primer registro de <strong>${ex}</strong>. ¡A darle con todo!</span>`;
       return;
@@ -383,44 +708,63 @@
 
     const lastSets = exSets.filter(s => s.date === targetDate);
     const pillsHTML = lastSets.map((s, idx) => `
-      <span class="last-set-pill" onclick="fillFromPrevious(${s.weight}, ${s.reps}, ${s.rir})">
+      <span class="last-set-pill" onclick="fillFromPrevious('${s.weight}', ${s.reps}, ${s.rir})">
         <strong>S${idx + 1}:</strong> ${s.weight}kg × ${s.reps} <span class="rir-badge">RIR ${s.rir}</span>
       </span>
     `).join('');
 
+    // Calcular sugerencia de sobrecarga basada en la mejor serie previa
+    const bestLast = lastSets.reduce((best, cur) => (cur.effective1RM > (best?.effective1RM || 0) ? cur : best), lastSets[0]);
+    let tipText = "";
+    if (bestLast) {
+      if (bestLast.rir >= 2) {
+        tipText = `🎯 Meta sugerida hoy: busca <strong>${bestLast.weight} kg × ${bestLast.reps + 1} reps</strong> o sube +1 a 2,5 kg.`;
+      } else {
+        tipText = `🎯 Meta sugerida hoy: mantén <strong>${bestLast.weight} kg × ${bestLast.reps} reps</strong> mejorando técnica o sumando 1 rep.`;
+      }
+    }
+
     container.innerHTML = `
       <div style="margin-bottom:4px; color:var(--accent-amber); font-weight:700;">
-        ⏮ Última sesión (${targetDate}) — Toca una serie para copiar:
+        ⏮ Última sesión (${targetDate}) — Toca para copiar:
       </div>
       <div>${pillsHTML}</div>
+      ${tipText ? `<div class="overload-tip">${tipText}</div>` : ''}
     `;
   }
 
   function fillFromPrevious(weight, reps, rir) {
-    document.getElementById('weightInput').value = weight;
+    document.getElementById('weightInput').value = String(weight).replace('.', ',');
     document.getElementById('repsInput').value = reps;
     document.getElementById('rirInput').value = rir;
   }
 
+  // --- GUARDAR SERIE + DETECTOR DE RÉCORD (PR) ---
   function saveSet() {
     const exercise = document.getElementById('exerciseSelect').value;
     if (!exercise) {
-      alert("Primero agrega al menos un ejercicio en la pestaña '📋 Ejercicios'.");
+      alert("Primero crea un ejercicio en la pestaña '📋 Rutinas'.");
       switchTab('tab-exercises', document.getElementById('btn-tab-exercises'));
       return;
     }
 
-    const weight = parseFloat(document.getElementById('weightInput').value);
+    const weight = parseDecimal(document.getElementById('weightInput').value);
     const reps = parseInt(document.getElementById('repsInput').value);
     const rir = parseInt(document.getElementById('rirInput').value);
+    const type = document.getElementById('setTypeInput').value;
     const date = document.getElementById('dateInput').value;
 
     if (isNaN(weight) || isNaN(reps) || !date) {
-      alert("Por favor ingresa el peso y las repeticiones.");
+      alert("Ingresa el peso (puedes usar coma o punto) y las repeticiones.");
       return;
     }
 
     const effective1RM = +(weight * (1 + (reps + rir) / 30)).toFixed(1);
+
+    // Verificar si es Récord Personal (PR) en series efectivas
+    const prevSets = appData.sets.filter(s => s.exercise === exercise && s.type !== 'warmup');
+    const prevMax1RM = prevSets.reduce((max, s) => Math.max(max, s.effective1RM || 0), 0);
+    const isPR = (type !== 'warmup') && (prevSets.length > 0) && (effective1RM > prevMax1RM);
 
     appData.sets.push({
       id: Date.now(),
@@ -428,12 +772,18 @@
       weight,
       reps,
       rir,
+      type,
+      isPR,
       date,
       effective1RM
     });
 
     document.getElementById('repsInput').value = '';
     saveToLocal();
+
+    // Iniciar cronómetro de descanso si está activo
+    const restSecs = parseInt(document.getElementById('restDurationSelect').value);
+    if (restSecs > 0) startTimer(restSecs);
   }
 
   function deleteSet(id) {
@@ -450,23 +800,75 @@
       return;
     }
 
-    tbody.innerHTML = recent.map(s => `
-      <tr>
-        <td style="color:var(--muted); font-size:0.75rem;">${s.date.slice(5)}</td>
-        <td><strong>${s.exercise}</strong></td>
-        <td>${s.weight} kg × ${s.reps}</td>
-        <td><span class="rir-badge">RIR ${s.rir ?? 0}</span></td>
-        <td style="text-align:right;">
-          <button class="btn-sec" style="margin:0; padding:4px 8px; width:auto;" onclick="deleteSet(${s.id})">✕</button>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = recent.map(s => {
+      const typeIcon = s.type === 'warmup' ? '🟡 ' : (s.type === 'dropset' ? '⚡ ' : '');
+      const prTag = s.isPR ? ` <span class="pr-badge">🏆 PR</span>` : '';
+      return `
+        <tr>
+          <td style="color:var(--muted); font-size:0.74rem;">${s.date.slice(5)}</td>
+          <td><strong>${typeIcon}${s.exercise}</strong>${prTag}</td>
+          <td>${String(s.weight).replace('.', ',')} kg × ${s.reps}</td>
+          <td><span class="rir-badge">RIR ${s.rir ?? 0}</span></td>
+          <td style="text-align:right;">
+            <button class="btn-sec" style="padding:4px 8px;" onclick="deleteSet(${s.id})">✕</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
+  // --- CRONÓMETRO DE DESCANSO ---
+  function startTimer(seconds) {
+    clearInterval(restInterval);
+    remainingSeconds = seconds;
+    document.getElementById('restTimerBar').style.display = 'flex';
+    updateTimerUI();
+
+    restInterval = setInterval(() => {
+      remainingSeconds--;
+      if (remainingSeconds <= 0) {
+        clearInterval(restInterval);
+        document.getElementById('timerDisplay').innerText = "¡A darle! 🔔";
+        playBeep();
+      } else {
+        updateTimerUI();
+      }
+    }, 1000);
+  }
+
+  function adjustTimer(delta) {
+    remainingSeconds = Math.max(0, remainingSeconds + delta);
+    updateTimerUI();
+  }
+
+  function stopTimer() {
+    clearInterval(restInterval);
+    document.getElementById('restTimerBar').style.display = 'none';
+  }
+
+  function updateTimerUI() {
+    const m = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+    const s = String(remainingSeconds % 60).padStart(2, '0');
+    document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+  }
+
+  function playBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch (e) {}
+  }
+
+  // --- GRÁFICOS ---
   function renderCharts() {
     const exercise = document.getElementById('chartExerciseSelect').value;
     const metric = document.getElementById('chartMetricSelect').value;
-    const filtered = exercise ? appData.sets.filter(s => s.exercise === exercise) : [];
+    const filtered = exercise ? appData.sets.filter(s => s.exercise === exercise && s.type !== 'warmup') : [];
 
     const byDate = {};
     filtered.forEach(s => {
@@ -488,7 +890,7 @@
       data: {
         labels: dates,
         datasets: [{
-          label: exercise || 'Sin ejercicio seleccionado',
+          label: exercise || 'Sin ejercicio',
           data: values,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.18)',
@@ -549,6 +951,7 @@
     });
   }
 
+  // --- BIOMETRÍA ---
   function saveManualBio() {
     const date = document.getElementById('dateInput').value || todayStr;
     if (!appData.biometrics[date]) appData.biometrics[date] = { steps: 0, hr: null };
@@ -575,13 +978,11 @@
 
   async function connectBLEHeartRate() {
     if (!navigator.bluetooth) {
-      alert("Tu navegador actual no soporta Web Bluetooth directo. En Android usa Chrome; en iPhone usa la app 'Bluefy' o el botón de Fitbit Web.");
+      alert("En iPhone usa el navegador gratuito 'Bluefy' para Bluetooth directo, o usa el botón de Sync Fitbit Web.");
       return;
     }
     try {
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: ['heart_rate'] }]
-      });
+      const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['heart_rate'] }] });
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService('heart_rate');
       const char = await service.getCharacteristic('heart_rate_measurement');
@@ -596,15 +997,13 @@
         else appData.biometrics[date].hr = hr;
         localStorage.setItem('gymTrackerV3', JSON.stringify(appData));
       });
-    } catch (err) {
-      console.log("BLE cancelado:", err);
-    }
+    } catch (err) {}
   }
 
   async function syncFitbitCloud() {
     let token = appData.fitbitToken;
     if (!token) {
-      token = prompt("Ingresa tu Access Token de la API de Fitbit (desde dev.fitbit.com) para importar pasos y pulso:");
+      token = prompt("Ingresa tu Access Token de la API de Fitbit (dev.fitbit.com):");
       if (!token) return;
       appData.fitbitToken = token.trim();
     }
@@ -644,6 +1043,7 @@
         const imported = JSON.parse(e.target.result);
         if (imported.exercises && imported.sets) {
           appData = imported;
+          if (!appData.routines) appData.routines = [];
           saveToLocal();
           alert("¡Historial restaurado con éxito!");
         }
@@ -654,6 +1054,7 @@
     reader.readAsText(file);
   }
 
+  renderDraftRoutine();
   saveToLocal();
 </script>
 </body>
