@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GymTracker">
+  <title>GymTracker Pro - RIR & Biometrics</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #131c2e;
+      --card-alt: #1e293b;
+      --accent: #38bdf8;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+      --accent-amber: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #2dd4bf33;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); padding: 14px; padding-bottom: 80px; max-width: 650px; margin: 0 auto; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-top: 6px; }
+    h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; }
+    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; background: var(--card); padding: 5px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #1e293b; }
+    .tab-btn { background: transparent; color: var(--muted); border: none; padding: 10px 6px; font-size: 0.85rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin: 0; }
+    .tab-btn.active { background: var(--accent); color: #090d16; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .card { background: var(--card); padding: 16px; border-radius: 14px; margin-bottom: 14px; border: 1px solid #1e293b; }
+    .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+    
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; margin-top: 10px; font-weight: 600; }
+    /* font-size 16px evita que Safari en iPhone haga zoom automático al tocar un input */
+    input, select, button {
+      width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid #334155;
+      background: #090d16; color: var(--text); font-size: 16px;
+    }
+    input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    button {
+      background: var(--accent); color: #090d16; font-weight: 700; border: none;
+      cursor: pointer; margin-top: 14px; transition: transform 0.1s;
+    }
+    button:active { transform: scale(0.98); }
+    .btn-sec { background: var(--card-alt); color: var(--text); border: 1px solid #334155; font-size: 0.85rem; padding: 8px 12px; }
+
+    .row-4 { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.3fr; gap: 8px; }
+    @media (max-width: 480px) { .row-4 { grid-template-columns: 1fr 1fr; } }
+
+    .last-workout-box {
+      background: #0f172a; border-left: 4px solid var(--accent-amber);
+      padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 0.85rem;
+    }
+    .last-set-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card-alt); padding: 6px 10px; border-radius: 8px;
+      margin: 4px 4px 0 0; font-size: 0.8rem; cursor: pointer; border: 1px solid #334155;
+    }
+    .last-set-pill:active { background: var(--accent); color: #000; }
+
+    .rir-badge {
+      padding: 2px 7px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+      background: #334155; color: var(--accent-amber);
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 9px 6px; border-bottom: 1px solid #1e293b; }
+    th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; }
+
+    .bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .bio-val { font-size: 1.6rem; font-weight: 800; margin: 4px 0; }
+    .small-note { font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>⚡ GymTracker</h1>
+    <div style="display:flex; gap:6px;">
+      <button class="btn-sec" style="margin:0; width:auto;" onclick="exportBackup()">💾 Backup</button>
+      <button class="btn-sec" style="margin:0; width:auto;" onclick="document.getElementById('importFile').click()">📂 Cargar</button>
+      <input type="file" id="importFile" style="display:none" accept=".json" onchange="importBackup(event)">
+    </div>
+  </header>
+
+  <!-- Navegación por Pestañas -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-train', this)">🏋️ Entrenar</button>
+    <button class="tab-btn" onclick="switchTab('tab-progress', this)">📈 Progreso</button>
+    <button class="tab-btn" onclick="switchTab('tab-band', this)">⌚ Banda / Salud</button>
+  </div>
+
+  <!-- PESTAÑA 1: ENTRENAR -->
+  <div id="tab-train" class="section active">
+    <div class="card">
+      <h2>
+        <span>Registrar Serie</span>
+        <span style="font-size:0.75rem; color:var(--muted); font-weight:normal;" id="todayDateLabel"></span>
+      </h2>
+
+      <label>Seleccionar o Crear Ejercicio</label>
+      <div style="display:flex; gap:6px;">
+        <select id="exerciseSelect" onchange="onExerciseChange()"></select>
+        <button class="btn-sec" style="margin:0; width:auto; white-space:nowrap;" onclick="toggleNewExercise()">+ Nuevo</button>
+      </div>
+
+      <div id="newExBox" style="display:none; margin-top:8px; gap:6px;">
+        <input type="text" id="newExerciseInput" placeholder="Ej: Press Inclinado Mancuernas">
+        <button style="margin:0; width:auto; padding:0 16px;" onclick="addNewExercise()">Guardar</button>
+      </div>
+
+      <!-- Recordatorio de la última sesión de este ejercicio -->
+      <div id="lastSessionContainer" class="last-workout-box"></div>
+
+      <div class="row-4">
+        <div>
+          <label>Peso (kg)</label>
+          <input type="number" id="weightInput" step="0.5" inputmode="decimal" placeholder="24">
+        </div>
+        <div>
+          <label>Reps</label>
+          <input type="number" id="repsInput" inputmode="numeric" placeholder="8">
+        </div>
+        <div>
+          <label>RIR (Recámara)</label>
+          <select id="rirInput">
+            <option value="0">RIR 0 (Fallo)</option>
+            <option value="1">RIR 1</option>
+            <option value="2" selected>RIR 2</option>
+            <option value="3">RIR 3</option>
+            <option value="4">RIR 4+</option>
+          </select>
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="dateInput">
+        </div>
+      </div>
+
+      <button onclick="saveSet()">＋ Guardar Serie</button>
+    </div>
+
+    <div class="card">
+      <h2>Series Registradas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Ejercicio</th>
+            <th>Serie</th>
+            <th>RIR</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="setsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 2: PROGRESO GRÁFICO -->
+  <div id="tab-progress" class="section">
+    <div class="card">
+      <h2>Evolución por Ejercicio</h2>
+      <label>Ejercicio a analizar</label>
+      <select id="chartExerciseSelect" onchange="renderCharts()"></select>
+
+      <label>Métrica del Gráfico</label>
+      <select id="chartMetricSelect" onchange="renderCharts()">
+        <option value="maxWeight">Peso Máximo Levantado (kg)</option>
+        <option value="effective1RM">1RM Efectivo (ajustado con RIR)</option>
+        <option value="totalVolume">Volumen Total de Sesión (kg × reps)</option>
+      </select>
+
+      <div style="margin-top: 14px;">
+        <canvas id="workoutChart" height="230"></canvas>
+      </div>
+      <p class="small-note">💡 El <strong>1RM Efectivo</strong> suma tus repeticiones hechas + tu RIR para mostrar tu ganancia real de fuerza aunque no vayas al fallo.</p>
+    </div>
+
+    <div class="card">
+      <h2>Actividad Diaria (Pasos y Pulso)</h2>
+      <canvas id="bioChart" height="190"></canvas>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3: BANDA / FITBIT -->
+  <div id="tab-band" class="section">
+    <div class="bio-grid">
+      <div class="card" style="margin:0;">
+        <div style="font-size:0.75rem; color:var(--muted);">RITMO CARDÍACO</div>
+        <div class="bio-val" id="liveHR" style="color:var(--accent-red);">-- <span style="font-size:0.9rem">bpm</span></div>
+        <button class="btn-sec" style="margin-top:6px; background:var(--accent-red); color:#000; border:none; font-weight:700;" onclick="connectBLEHeartRate()">📡 Conectar Banda (BLE)</button>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <div style="font-size:0.75rem; color:var(--muted);">PASOS HOY</div>
+        <div class="bio-val" id="todaySteps" style="color:var(--accent-green);">0</div>
+        <button class="btn-sec" style="margin-top:6px;" onclick="syncFitbitCloud()">☁️ Sync Fitbit Web</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Guardar Resumen del Día (Cualquier Banda)</h2>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+        <div>
+          <label>Pasos del día</label>
+          <input type="number" id="inputSteps" inputmode="numeric" placeholder="Ej: 8500">
+        </div>
+        <div>
+          <label>FC Media / Entreno (bpm)</label>
+          <input type="number" id="inputHR" inputmode="numeric" placeholder="Ej: 128">
+        </div>
+      </div>
+      <button style="background:var(--accent-green);" onclick="saveManualBio()">Guardar Datos de Hoy</button>
+      <p class="small-note">
+        <strong>¿Cómo conectar tu Fitbit u otra banda?</strong><br>
+        • <strong>Modo Universal (Android/PC):</strong> Activa "Transmitir FC" en los ajustes de tu Fitbit, Mi Band, Amazfit o Garmin y toca <em>Conectar Banda (BLE)</em>.<br>
+        • <strong>Modo iPhone / Fitbit Cloud:</strong> Puedes ingresar un Token/Client ID de Fitbit o anotar tus pasos al final de la rutina para ver la gráfica en la pestaña Progreso.
+      </p>
+    </div>
+  </div>
+
+<script>
+  // Solicitar almacenamiento persistente en el navegador del teléfono
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist();
+  }
+
+  const DEFAULT_EXERCISES = [
+    "Press de Banca con Mancuernas",
+    "Press Inclinado con Mancuernas",
+    "Remo con Mancuerna",
+    "Press Militar",
+    "Sentadilla Búlgara",
+    "Peso Muerto Rumano",
+    "Dominadas / Jalón",
+    "Curl de Bíceps",
+    "Elevaciones Laterales"
+  ];
+
+  let appData = JSON.parse(localStorage.getItem('gymTrackerV2')) || {
+    exercises: DEFAULT_EXERCISES,
+    sets: [],
+    biometrics: {},
+    fitbitToken: ""
+  };
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  document.getElementById('dateInput').value = todayStr;
+  document.getElementById('todayDateLabel').innerText = todayStr;
+
+  let workoutChartInstance = null;
+  let bioChartInstance = null;
+
+  function saveToLocal() {
+    localStorage.setItem('gymTrackerV2', JSON.stringify(appData));
+    populateExerciseSelects();
+    renderLastSession();
+    renderSetsTable();
+    renderBioSummary();
+    renderCharts();
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+    if (tabId === 'tab-progress') renderCharts();
+  }
+
+  function populateExerciseSelects() {
+    const sel1 = document.getElementById('exerciseSelect');
+    const sel2 = document.getElementById('chartExerciseSelect');
+    const val1 = sel1.value;
+    const val2 = sel2.value;
+
+    const optionsHTML = appData.exercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+    sel1.innerHTML = optionsHTML;
+    sel2.innerHTML = optionsHTML;
+
+    if (appData.exercises.includes(val1)) sel1.value = val1;
+    if (appData.exercises.includes(val2)) sel2.value = val2;
+  }
+
+  function toggleNewExercise() {
+    const box = document.getElementById('newExBox');
+    box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+    if (box.style.display === 'flex') document.getElementById('newExerciseInput').focus();
+  }
+
+  function addNewExercise() {
+    const input = document.getElementById('newExerciseInput');
+    const name = input.value.trim();
+    if (!name) return;
+    if (!appData.exercises.includes(name)) {
+      appData.exercises.push(name);
+    }
+    input.value = '';
+    document.getElementById('newExBox').style.display = 'none';
+    saveToLocal();
+    document.getElementById('exerciseSelect').value = name;
+    document.getElementById('chartExerciseSelect').value = name;
+    onExerciseChange();
+  }
+
+  function onExerciseChange() {
+    const selected = document.getElementById('exerciseSelect').value;
+    document.getElementById('chartExerciseSelect').value = selected;
+    renderLastSession();
+  }
+
+  // Muestra qué hiciste en el entrenamiento anterior de ese ejercicio
+  function renderLastSession() {
+    const ex = document.getElementById('exerciseSelect').value;
+    const container = document.getElementById('lastSessionContainer');
+    const exSets = appData.sets.filter(s => s.exercise === ex);
+
+    if (exSets.length === 0) {
+      container.innerHTML = `<span style="color:var(--muted);">Primer registro de <strong>${ex}</strong>. ¡A darle con todo!</span>`;
+      return;
+    }
+
+    // Buscar la última fecha registrada (anterior a hoy, o de hoy si es la única)
+    const dates = [...new Set(exSets.map(s => s.date))].sort();
+    const currentInputDate = document.getElementById('dateInput').value;
+    const pastDates = dates.filter(d => d < currentInputDate);
+    const targetDate = pastDates.length > 0 ? pastDates[pastDates.length - 1] : dates[dates.length - 1];
+
+    const lastSets = exSets.filter(s => s.date === targetDate);
+    const pillsHTML = lastSets.map((s, idx) => `
+      <span class="last-set-pill" onclick="fillFromPrevious(${s.weight}, ${s.reps}, ${s.rir})">
+        <strong>S${idx + 1}:</strong> ${s.weight}kg × ${s.reps} <span class="rir-badge">RIR ${s.rir}</span>
+      </span>
+    `).join('');
+
+    container.innerHTML = `
+      <div style="margin-bottom:4px; color:var(--accent-amber); font-weight:700;">
+        ⏮ Última sesión (${targetDate}) — Toca una serie para copiar:
+      </div>
+      <div>${pillsHTML}</div>
+    `;
+  }
+
+  function fillFromPrevious(weight, reps, rir) {
+    document.getElementById('weightInput').value = weight;
+    document.getElementById('repsInput').value = reps;
+    document.getElementById('rirInput').value = rir;
+  }
+
+  function saveSet() {
+    const exercise = document.getElementById('exerciseSelect').value;
+    const weight = parseFloat(document.getElementById('weightInput').value);
+    const reps = parseInt(document.getElementById('repsInput').value);
+    const rir = parseInt(document.getElementById('rirInput').value);
+    const date = document.getElementById('dateInput').value;
+
+    if (!exercise || isNaN(weight) || isNaN(reps) || !date) {
+      alert("Por favor ingresa el peso y las repeticiones.");
+      return;
+    }
+
+    // 1RM Efectivo considerando RIR (Fórmula de Epley con Reps en Reserva)
+    const effective1RM = +(weight * (1 + (reps + rir) / 30)).toFixed(1);
+
+    appData.sets.push({
+      id: Date.now(),
+      exercise,
+      weight,
+      reps,
+      rir,
+      date,
+      effective1RM
+    });
+
+    document.getElementById('repsInput').value = '';
+    saveToLocal();
+  }
+
+  function deleteSet(id) {
+    appData.sets = appData.sets.filter(s => s.id !== id);
+    saveToLocal();
+  }
+
+  function renderSetsTable() {
+    const tbody = document.getElementById('setsTableBody');
+    const recent = [...appData.sets].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id).slice(0, 20);
+
+    if (recent.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Aún no hay series guardadas.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = recent.map(s => `
+      <tr>
+        <td style="color:var(--muted); font-size:0.75rem;">${s.date.slice(5)}</td>
+        <td><strong>${s.exercise}</strong></td>
+        <td>${s.weight} kg × ${s.reps}</td>
+        <td><span class="rir-badge">RIR ${s.rir ?? 0}</span></td>
+        <td style="text-align:right;">
+          <button class="btn-sec" style="margin:0; padding:4px 8px; width:auto;" onclick="deleteSet(${s.id})">✕</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderCharts() {
+    const exercise = document.getElementById('chartExerciseSelect').value;
+    const metric = document.getElementById('chartMetricSelect').value;
+    const filtered = appData.sets.filter(s => s.exercise === exercise);
+
+    const byDate = {};
+    filtered.forEach(s => {
+      if (!byDate[s.date]) byDate[s.date] = { maxWeight: 0, effective1RM: 0, totalVolume: 0 };
+      if (s.weight > byDate[s.date].maxWeight) byDate[s.date].maxWeight = s.weight;
+      const e1rm = s.effective1RM || +(s.weight * (1 + s.reps / 30)).toFixed(1);
+      if (e1rm > byDate[s.date].effective1RM) byDate[s.date].effective1RM = e1rm;
+      byDate[s.date].totalVolume += (s.weight * s.reps);
+    });
+
+    const dates = Object.keys(byDate).sort();
+    const values = dates.map(d => byDate[d][metric]);
+
+    const ctx1 = document.getElementById('workoutChart').getContext('2d');
+    if (workoutChartInstance) workoutChartInstance.destroy();
+
+    workoutChartInstance = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: dates,
+        datasets: [{
+          label: exercise,
+          data: values,
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.18)',
+          borderWidth: 3,
+          tension: 0.25,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#38bdf8'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#f8fafc' } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+
+    // Gráfico de Biometría (Pasos y Pulso)
+    const bioDates = Object.keys(appData.biometrics).sort();
+    const stepsData = bioDates.map(d => appData.biometrics[d].steps || 0);
+    const hrData = bioDates.map(d => appData.biometrics[d].hr || null);
+
+    const ctx2 = document.getElementById('bioChart').getContext('2d');
+    if (bioChartInstance) bioChartInstance.destroy();
+
+    bioChartInstance = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: bioDates,
+        datasets: [
+          {
+            label: 'Pasos',
+            data: stepsData,
+            backgroundColor: 'rgba(52, 211, 153, 0.6)',
+            borderColor: '#34d399',
+            borderWidth: 1
+          },
+          {
+            label: 'FC Media (bpm)',
+            data: hrData,
+            type: 'line',
+            borderColor: '#f87171',
+            backgroundColor: '#f87171',
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#f8fafc' } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+  }
+
+  // Biometría: BLE Estándar + Fitbit Web API + Manual
+  function saveManualBio() {
+    const date = document.getElementById('dateInput').value || todayStr;
+    if (!appData.biometrics[date]) appData.biometrics[date] = { steps: 0, hr: null };
+
+    const steps = parseInt(document.getElementById('inputSteps').value);
+    const hr = parseInt(document.getElementById('inputHR').value);
+
+    if (!isNaN(steps)) appData.biometrics[date].steps = steps;
+    if (!isNaN(hr)) appData.biometrics[date].hr = hr;
+
+    document.getElementById('inputSteps').value = '';
+    document.getElementById('inputHR').value = '';
+    saveToLocal();
+  }
+
+  function renderBioSummary() {
+    const date = document.getElementById('dateInput').value || todayStr;
+    const bio = appData.biometrics[date] || { steps: 0, hr: '--' };
+    document.getElementById('todaySteps').innerText = (bio.steps || 0).toLocaleString();
+    if (bio.hr && bio.hr !== '--') {
+      document.getElementById('liveHR').innerHTML = `${bio.hr} <span style="font-size:0.9rem">bpm</span>`;
+    }
+  }
+
+  async function connectBLEHeartRate() {
+    if (!navigator.bluetooth) {
+      alert("Tu navegador actual no soporta Web Bluetooth directo. En Android usa Chrome; en iPhone usa la app 'Bluefy' o el botón de Fitbit Web.");
+      return;
+    }
+    try {
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{ services: ['heart_rate'] }]
+      });
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService('heart_rate');
+      const char = await service.getCharacteristic('heart_rate_measurement');
+      await char.startNotifications();
+      char.addEventListener('characteristicvaluechanged', (e) => {
+        const val = e.target.value;
+        const flags = val.getUint8(0);
+        const hr = (flags & 0x01) ? val.getUint16(1, true) : val.getUint8(1);
+        document.getElementById('liveHR').innerHTML = `${hr} <span style="font-size:0.9rem">bpm</span>`;
+        const date = document.getElementById('dateInput').value || todayStr;
+        if (!appData.biometrics[date]) appData.biometrics[date] = { steps: 0, hr: hr };
+        else appData.biometrics[date].hr = hr;
+        localStorage.setItem('gymTrackerV2', JSON.stringify(appData));
+      });
+    } catch (err) {
+      console.log("BLE cancelado o no disponible:", err);
+    }
+  }
+
+  async function syncFitbitCloud() {
+    let token = appData.fitbitToken;
+    if (!token) {
+      token = prompt("Ingresa tu Access Token de la API de Fitbit (desde dev.fitbit.com) para importar pasos y pulso automáticamente:");
+      if (!token) return;
+      appData.fitbitToken = token.trim();
+    }
+    try {
+      const res = await fetch(`https://api.fitbit.com/1/user/-/activities/date/${todayStr}.json`, {
+        headers: { 'Authorization': `Bearer ${appData.fitbitToken}` }
+      });
+      if (!res.ok) throw new Error("Token inválido o expirado");
+      const data = await res.json();
+      const steps = data?.summary?.steps || 0;
+      const restingHR = data?.summary?.restingHeartRate || null;
+      if (!appData.biometrics[todayStr]) appData.biometrics[todayStr] = { steps: 0, hr: null };
+      appData.biometrics[todayStr].steps = steps;
+      if (restingHR) appData.biometrics[todayStr].hr = restingHR;
+      saveToLocal();
+      alert(`¡Sincronizado con Fitbit! Pasos hoy: ${steps}`);
+    } catch (e) {
+      appData.fitbitToken = "";
+      alert("No se pudo conectar con Fitbit API. Verifica el token o ingresa los pasos manualmente abajo.");
+    }
+  }
+
+  // Backup y Restauración (para cambiar de teléfono sin perder datos)
+  function exportBackup() {
+    const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `gymtracker_backup_${todayStr}.json`;
+    a.click();
+  }
+
+  function importBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (imported.exercises && imported.sets) {
+          appData = imported;
+          saveToLocal();
+          alert("¡Historial restaurado con éxito!");
+        }
+      } catch (err) {
+        alert("El archivo no es un backup válido.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  saveToLocal();
+</script>
+</body>
+</html>
