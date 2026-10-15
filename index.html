@@ -53,7 +53,7 @@
     .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
-    /* Barra de Rutina Activa en Entrenar */
+    /* Barra de Rutina Activa */
     .routine-queue {
       display: flex; gap: 8px; overflow-x: auto; padding: 8px 2px 10px 2px; margin-top: 6px;
       scrollbar-width: none;
@@ -84,6 +84,20 @@
       color: var(--accent-green); font-size: 0.78rem; font-weight: 600;
     }
 
+    /* Tarjetas de KPIs de Evolución */
+    .kpi-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
+    }
+    .kpi-box {
+      background: #090d16; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;
+    }
+    .kpi-title { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+    .kpi-val { font-size: 1.2rem; font-weight: 800; margin: 3px 0; display: flex; align-items: baseline; justify-content: space-between; }
+    .kpi-sub { font-size: 0.72rem; color: var(--muted); }
+    .delta-up { color: var(--accent-green); font-size: 0.75rem; font-weight: 700; background: rgba(52, 211, 153, 0.12); padding: 2px 6px; border-radius: 6px; }
+    .delta-down { color: var(--accent-red); font-size: 0.75rem; font-weight: 700; background: rgba(248, 113, 113, 0.12); padding: 2px 6px; border-radius: 6px; }
+    .delta-eq { color: var(--muted); font-size: 0.75rem; font-weight: 700; background: #1e293b; padding: 2px 6px; border-radius: 6px; }
+
     /* Cronómetro de Descanso */
     .timer-bar {
       background: linear-gradient(90deg, #0f172a, #1e293b);
@@ -107,9 +121,9 @@
       padding: 15px; text-align: center; margin-bottom: 12px;
     }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.82rem; }
-    th, td { text-align: left; padding: 8px 5px; border-bottom: 1px solid #1e293b; }
-    th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.8rem; }
+    th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid #1e293b; }
+    th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; }
 
     .bio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .bio-val { font-size: 1.5rem; font-weight: 800; margin: 4px 0; }
@@ -179,10 +193,10 @@
         </div>
       </div>
 
-      <!-- Cola de ejercicios de la rutina (con botones para cambiar el orden en vivo) -->
+      <!-- Cola de ejercicios de la rutina -->
       <div id="routineQueueBox" style="display:none; margin-top:10px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; color:var(--muted); font-weight:600;">ORDEN DE HOY (toca ◀ ▶ si necesitas alterar el orden):</span>
+          <span style="font-size:0.75rem; color:var(--muted); font-weight:600;">ORDEN DE HOY (toca ◀ ▶ para alterar el orden):</span>
           <button class="btn-sec" style="padding:3px 8px; font-size:0.72rem;" onclick="nextRoutineExercise()">Siguiente ⏭</button>
         </div>
         <div id="routineQueueList" class="routine-queue"></div>
@@ -202,7 +216,6 @@
       <div class="row-3">
         <div>
           <label>Peso (kg)</label>
-          <!-- text + inputmode decimal permite usar la coma (,) del teclado iPhone -->
           <input type="text" id="weightInput" inputmode="decimal" placeholder="Ej: 13,5" oninput="sanitizeDecimal(this)">
         </div>
         <div>
@@ -240,7 +253,7 @@
     </div>
 
     <div class="card">
-      <h2>Historial de Series</h2>
+      <h2>Historial de Series Recientes</h2>
       <table>
         <thead>
           <tr>
@@ -258,7 +271,6 @@
 
   <!-- PESTAÑA 2: MIS EJERCICIOS Y ARMADOR DE RUTINAS -->
   <div id="tab-exercises" class="section">
-    <!-- Crear / Editar Rutina -->
     <div class="card">
       <h2>🗂️ Crear o Modificar Rutina</h2>
       <label style="margin-top:0;">Nombre de la Rutina</label>
@@ -276,13 +288,11 @@
       <p class="small-note">Puedes reordenar los ejercicios con ⬆️ y ⬇️ antes de guardar o durante el entrenamiento.</p>
     </div>
 
-    <!-- Lista de Rutinas Guardadas -->
     <div class="card">
       <h2>Mis Rutinas Guardadas (<span id="routineCount">0</span>)</h2>
       <div id="savedRoutinesList"></div>
     </div>
 
-    <!-- Catálogo de Ejercicios Individuales -->
     <div class="card">
       <h2>➕ Catálogo de Mis Ejercicios (<span id="exerciseCount">0</span>)</h2>
       <div style="display:flex; gap:8px; margin-bottom:12px;">
@@ -293,29 +303,73 @@
     </div>
   </div>
 
-  <!-- PESTAÑA 3: PROGRESO GRÁFICO -->
+  <!-- PESTAÑA 3: PROGRESO Y ANALÍTICA ENTRENAMIENTO A ENTRENAMIENTO -->
   <div id="tab-progress" class="section">
     <div class="card">
-      <h2>Evolución por Ejercicio</h2>
-      <label style="margin-top:0;">Seleccionar ejercicio</label>
+      <h2>📈 Evolución por Ejercicio</h2>
+      <label style="margin-top:0;">Seleccionar ejercicio a analizar</label>
       <select id="chartExerciseSelect" onchange="renderCharts()"></select>
 
-      <label>Métrica del Gráfico</label>
+      <!-- Tarjetas KPI Comparativas (Última sesión vs Anterior) -->
+      <div id="exerciseKpiContainer" class="kpi-grid"></div>
+
+      <label>Métrica Principal a Graficar (Sesión a Sesión)</label>
       <select id="chartMetricSelect" onchange="renderCharts()">
-        <option value="maxWeight">Peso Máximo Levantado (kg)</option>
-        <option value="effective1RM">1RM Efectivo (ajustado con RIR)</option>
-        <option value="totalVolume">Volumen Total de Sesión (kg × reps)</option>
+        <option value="effective1RM">💪 1RM Efectivo con RIR (Fuerza Real - kg)</option>
+        <option value="raw1RM">🏋️ 1RM Bruto sin RIR (Fuerza Movida - kg)</option>
+        <option value="maxWeight">⚖️ Peso Máximo Levantado (kg)</option>
+        <option value="topSetVolume">🔥 Mejor Serie / Top Set (Peso × Reps máx)</option>
+        <option value="totalVolume">📦 Tonelaje Total de Sesión (Σ Peso × Reps)</option>
+        <option value="effectiveReps">🧬 Repeticiones Efectivas (Estímulo Hipertrofia)</option>
+        <option value="avgWeight">🎯 Intensidad Media (Peso Medio por Rep - kg)</option>
+        <option value="totalReps">🔢 Repeticiones Totales de la Sesión</option>
+        <option value="avgRPE">⚡ Esfuerzo Medio RPE (10 - RIR promedio)</option>
       </select>
 
       <div style="margin-top: 14px;">
-        <canvas id="workoutChart" height="230"></canvas>
+        <canvas id="workoutChart" height="225"></canvas>
       </div>
-      <p class="small-note">💡 Solo se grafican las series efectivas y drop sets (el calentamiento no altera tu récord).</p>
+      <p id="metricExplanationNote" class="small-note"></p>
+    </div>
+
+    <!-- Tabla Comparativa Entrenamiento a Entrenamiento -->
+    <div class="card">
+      <h2>🔍 Comparativa Entrenamiento a Entrenamiento</h2>
+      <p class="small-note" style="margin-top:0; margin-bottom:8px;">Compara cada sesión de este ejercicio contra la inmediata anterior e incluye la fatiga entre tu 1ª y última serie.</p>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Series Realizadas</th>
+              <th>1RM Ef. (Δ%)</th>
+              <th>Volumen / Reps Ef.</th>
+              <th>Fatiga</th>
+            </tr>
+          </thead>
+          <tbody id="sessionComparisonTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Evolución Global de la Sesión Completa (Todos los ejercicios del día) -->
+    <div class="card">
+      <h2>🌐 Rendimiento Global por Entrenamiento</h2>
+      <label style="margin-top:0;">Métrica Global del Día (Todos los ejercicios sumados)</label>
+      <select id="globalMetricSelect" onchange="renderCharts()">
+        <option value="globalVolume">📦 Tonelaje Total del Entrenamiento (kg)</option>
+        <option value="globalSets">🔥 Series Efectivas Totales por Entreno</option>
+        <option value="globalEffReps">🧬 Repeticiones Efectivas Totales del Día</option>
+        <option value="globalTotalReps">🔢 Repeticiones Totales del Entrenamiento</option>
+      </select>
+      <div style="margin-top: 12px;">
+        <canvas id="globalWorkoutChart" height="200"></canvas>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Actividad Diaria (Pasos y Pulso)</h2>
-      <canvas id="bioChart" height="190"></canvas>
+      <h2>❤️ Actividad Diaria (Pasos y Pulso)</h2>
+      <canvas id="bioChart" height="180"></canvas>
     </div>
   </div>
 
@@ -356,7 +410,6 @@
     navigator.storage.persist();
   }
 
-  // Conserva los datos ya guardados en gymTrackerV3 y agrega soporte para rutinas
   let appData = JSON.parse(localStorage.getItem('gymTrackerV3')) || {
     exercises: [],
     routines: [],
@@ -377,9 +430,9 @@
   document.getElementById('todayDateLabel').innerText = todayStr;
 
   let workoutChartInstance = null;
+  let globalChartInstance = null;
   let bioChartInstance = null;
 
-  // Permite escribir tanto coma (13,5) como punto (13.5) en iOS y Android
   function sanitizeDecimal(input) {
     let val = input.value.replace(/[^0-9.,]/g, '');
     const parts = val.split(/[.,]/);
@@ -392,6 +445,82 @@
   function parseDecimal(val) {
     if (!val) return NaN;
     return parseFloat(String(val).replace(',', '.'));
+  }
+
+  function fmtNum(n, dec = 1) {
+    if (n === null || n === undefined || isNaN(n)) return '--';
+    return Number.isInteger(n) ? String(n) : n.toFixed(dec).replace('.', ',');
+  }
+
+  // Calcula Repeticiones Efectivas de una serie (modelo de estímulo por cercanía al fallo: últimas 5 reps)
+  function calcEffectiveRepsForSet(reps, rir) {
+    const r = Number(reps) || 0;
+    const reserve = (rir === undefined || rir === null) ? 2 : Number(rir);
+    const stimulating = Math.max(0, 5 - reserve);
+    return Math.min(r, stimulating);
+  }
+
+  // Agrupa y calcula todas las métricas sesión a sesión para un ejercicio
+  function computeExerciseSessions(exerciseName) {
+    if (!exerciseName) return [];
+    const filtered = appData.sets.filter(s => s.exercise === exerciseName && s.type !== 'warmup');
+    const byDate = {};
+
+    filtered.forEach(s => {
+      const w = Number(s.weight) || 0;
+      const r = Number(s.reps) || 0;
+      const rir = (s.rir === undefined || s.rir === null) ? 0 : Number(s.rir);
+      const raw1RM = +(w * (1 + r / 30)).toFixed(1);
+      const eff1RM = s.effective1RM || +(w * (1 + (r + rir) / 30)).toFixed(1);
+      const setVol = w * r;
+      const effReps = calcEffectiveRepsForSet(r, rir);
+
+      if (!byDate[s.date]) {
+        byDate[s.date] = {
+          date: s.date,
+          sets: [],
+          maxWeight: 0,
+          raw1RM: 0,
+          effective1RM: 0,
+          topSetVolume: 0,
+          totalVolume: 0,
+          totalReps: 0,
+          effectiveReps: 0,
+          rirSum: 0,
+          setCount: 0
+        };
+      }
+      const d = byDate[s.date];
+      d.sets.push({ weight: w, reps: r, rir, eff1RM, setVol });
+      if (w > d.maxWeight) d.maxWeight = w;
+      if (raw1RM > d.raw1RM) d.raw1RM = raw1RM;
+      if (eff1RM > d.effective1RM) d.effective1RM = eff1RM;
+      if (setVol > d.topSetVolume) d.topSetVolume = +setVol.toFixed(1);
+      d.totalVolume = +(d.totalVolume + setVol).toFixed(1);
+      d.totalReps += r;
+      d.effectiveReps += effReps;
+      d.rirSum += rir;
+      d.setCount += 1;
+    });
+
+    const dates = Object.keys(byDate).sort();
+    return dates.map(date => {
+      const d = byDate[date];
+      d.avgWeight = d.totalReps > 0 ? +(d.totalVolume / d.totalReps).toFixed(1) : 0;
+      const avgRir = d.setCount > 0 ? (d.rirSum / d.setCount) : 0;
+      d.avgRIR = +avgRir.toFixed(1);
+      d.avgRPE = +(10 - avgRir).toFixed(1);
+
+      // Índice de fatiga intra-sesión (% caída de rendimiento de la Serie 1 a la última serie)
+      if (d.sets.length >= 2) {
+        const first1RM = d.sets[0].eff1RM;
+        const last1RM = d.sets[d.sets.length - 1].eff1RM;
+        d.fatigueDropPct = first1RM > 0 ? +(((last1RM - first1RM) / first1RM) * 100).toFixed(1) : 0;
+      } else {
+        d.fatigueDropPct = 0;
+      }
+      return d;
+    });
   }
 
   function saveToLocal() {
@@ -490,7 +619,7 @@
     `).join('');
   }
 
-  // --- GESTIÓN DE RUTINAS Y CAMBIO DE ORDEN ---
+  // --- GESTIÓN DE RUTINAS ---
   function addExToDraftRoutine() {
     const ex = document.getElementById('routineAddExSelect').value;
     if (!ex) return;
@@ -615,7 +744,6 @@
     saveToLocal();
   }
 
-  // Cola interactiva de la rutina activa (permite cambiar el orden en el gimnasio)
   function renderRoutineQueue() {
     const box = document.getElementById('routineQueueBox');
     const list = document.getElementById('routineQueueList');
@@ -685,7 +813,7 @@
     renderLastSession();
   }
 
-  // --- MEMORIA DE ÚLTIMA SESIÓN + ASESOR DE SOBRECARGA PROGRESIVA ---
+  // --- MEMORIA DE ÚLTIMA SESIÓN + ASESOR DE SOBRECARGA ---
   function renderLastSession() {
     const ex = document.getElementById('exerciseSelect').value;
     const container = document.getElementById('lastSessionContainer');
@@ -709,24 +837,26 @@
     const lastSets = exSets.filter(s => s.date === targetDate);
     const pillsHTML = lastSets.map((s, idx) => `
       <span class="last-set-pill" onclick="fillFromPrevious('${s.weight}', ${s.reps}, ${s.rir})">
-        <strong>S${idx + 1}:</strong> ${s.weight}kg × ${s.reps} <span class="rir-badge">RIR ${s.rir}</span>
+        <strong>S${idx + 1}:</strong> ${fmtNum(s.weight)}kg × ${s.reps} <span class="rir-badge">RIR ${s.rir}</span>
       </span>
     `).join('');
 
-    // Calcular sugerencia de sobrecarga basada en la mejor serie previa
+    const prevVol = lastSets.reduce((acc, s) => acc + (s.weight * s.reps), 0);
+    const prevEffReps = lastSets.reduce((acc, s) => acc + calcEffectiveRepsForSet(s.reps, s.rir), 0);
     const bestLast = lastSets.reduce((best, cur) => (cur.effective1RM > (best?.effective1RM || 0) ? cur : best), lastSets[0]);
+
     let tipText = "";
     if (bestLast) {
       if (bestLast.rir >= 2) {
-        tipText = `🎯 Meta sugerida hoy: busca <strong>${bestLast.weight} kg × ${bestLast.reps + 1} reps</strong> o sube +1 a 2,5 kg.`;
+        tipText = `🎯 Meta de hoy: supera <strong>${fmtNum(bestLast.weight)} kg × ${bestLast.reps + 1} reps</strong> (o sube carga). Sesión previa: ${fmtNum(prevVol)} kg de volumen y ${prevEffReps} reps efectivas.`;
       } else {
-        tipText = `🎯 Meta sugerida hoy: mantén <strong>${bestLast.weight} kg × ${bestLast.reps} reps</strong> mejorando técnica o sumando 1 rep.`;
+        tipText = `🎯 Meta de hoy: iguala <strong>${fmtNum(bestLast.weight)} kg × ${bestLast.reps} reps</strong> con mejor RIR o suma +1 rep. Sesión previa: ${fmtNum(prevVol)} kg totales.`;
       }
     }
 
     container.innerHTML = `
       <div style="margin-bottom:4px; color:var(--accent-amber); font-weight:700;">
-        ⏮ Última sesión (${targetDate}) — Toca para copiar:
+        ⏮ Última sesión (${targetDate}) — Toca una serie para copiar:
       </div>
       <div>${pillsHTML}</div>
       ${tipText ? `<div class="overload-tip">${tipText}</div>` : ''}
@@ -739,7 +869,7 @@
     document.getElementById('rirInput').value = rir;
   }
 
-  // --- GUARDAR SERIE + DETECTOR DE RÉCORD (PR) ---
+  // --- GUARDAR SERIE ---
   function saveSet() {
     const exercise = document.getElementById('exerciseSelect').value;
     if (!exercise) {
@@ -761,7 +891,6 @@
 
     const effective1RM = +(weight * (1 + (reps + rir) / 30)).toFixed(1);
 
-    // Verificar si es Récord Personal (PR) en series efectivas
     const prevSets = appData.sets.filter(s => s.exercise === exercise && s.type !== 'warmup');
     const prevMax1RM = prevSets.reduce((max, s) => Math.max(max, s.effective1RM || 0), 0);
     const isPR = (type !== 'warmup') && (prevSets.length > 0) && (effective1RM > prevMax1RM);
@@ -781,7 +910,6 @@
     document.getElementById('repsInput').value = '';
     saveToLocal();
 
-    // Iniciar cronómetro de descanso si está activo
     const restSecs = parseInt(document.getElementById('restDurationSelect').value);
     if (restSecs > 0) startTimer(restSecs);
   }
@@ -807,7 +935,7 @@
         <tr>
           <td style="color:var(--muted); font-size:0.74rem;">${s.date.slice(5)}</td>
           <td><strong>${typeIcon}${s.exercise}</strong>${prTag}</td>
-          <td>${String(s.weight).replace('.', ',')} kg × ${s.reps}</td>
+          <td>${fmtNum(s.weight)} kg × ${s.reps}</td>
           <td><span class="rir-badge">RIR ${s.rir ?? 0}</span></td>
           <td style="text-align:right;">
             <button class="btn-sec" style="padding:4px 8px;" onclick="deleteSet(${s.id})">✕</button>
@@ -817,7 +945,7 @@
     }).join('');
   }
 
-  // --- CRONÓMETRO DE DESCANSO ---
+  // --- CRONÓMETRO ---
   function startTimer(seconds) {
     clearInterval(restInterval);
     remainingSeconds = seconds;
@@ -864,23 +992,119 @@
     } catch (e) {}
   }
 
-  // --- GRÁFICOS ---
+  // --- RENDERIZADO DE KPIs, TABLA COMPARATIVA Y GRÁFICOS ---
+  function formatDeltaBadge(current, previous, unit = '%') {
+    if (previous === undefined || previous === null || previous === 0) {
+      return `<span class="delta-eq">1ª sesión</span>`;
+    }
+    const diff = current - previous;
+    const pct = ((diff / previous) * 100).toFixed(1);
+    if (Math.abs(diff) < 0.05) return `<span class="delta-eq">= 0%</span>`;
+    if (diff > 0) return `<span class="delta-up">▲ +${pct.replace('.', ',')}${unit}</span>`;
+    return `<span class="delta-down">▼ ${pct.replace('.', ',')}${unit}</span>`;
+  }
+
+  function renderExerciseAnalytics(sessions) {
+    const kpiBox = document.getElementById('exerciseKpiContainer');
+    const tbody = document.getElementById('sessionComparisonTable');
+
+    if (!sessions || sessions.length === 0) {
+      kpiBox.innerHTML = `
+        <div class="kpi-box" style="grid-column: span 2; text-align:center; color:var(--muted); font-size:0.82rem;">
+          Registra al menos una serie efectiva de este ejercicio para desbloquear las métricas comparativas.
+        </div>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Sin sesiones registradas para este ejercicio.</td></tr>`;
+      return;
+    }
+
+    const last = sessions[sessions.length - 1];
+    const prev = sessions.length >= 2 ? sessions[sessions.length - 2] : null;
+    const allTimePR1RM = Math.max(...sessions.map(s => s.effective1RM));
+    const allTimeMaxWeight = Math.max(...sessions.map(s => s.maxWeight));
+
+    kpiBox.innerHTML = `
+      <div class="kpi-box">
+        <div class="kpi-title">1RM Efectivo (Últ. vs Ant.)</div>
+        <div class="kpi-val">
+          <span>${fmtNum(last.effective1RM)} kg</span>
+          ${formatDeltaBadge(last.effective1RM, prev?.effective1RM)}
+        </div>
+        <div class="kpi-sub">🏆 Récord Histórico: <strong>${fmtNum(allTimePR1RM)} kg</strong> (Peso máx: ${fmtNum(allTimeMaxWeight)} kg)</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-title">Mejor Serie (Top Set Vol)</div>
+        <div class="kpi-val">
+          <span>${fmtNum(last.topSetVolume)} kg</span>
+          ${formatDeltaBadge(last.topSetVolume, prev?.topSetVolume)}
+        </div>
+        <div class="kpi-sub">Tonelaje total sesión: <strong>${fmtNum(last.totalVolume)} kg</strong> (${last.setCount} series)</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-title">Reps Efectivas (Hipertrofia)</div>
+        <div class="kpi-val">
+          <span>${last.effectiveReps} ef.</span>
+          ${formatDeltaBadge(last.effectiveReps, prev?.effectiveReps)}
+        </div>
+        <div class="kpi-sub">De <strong>${last.totalReps} reps</strong> totales hechas en la sesión</div>
+      </div>
+
+      <div class="kpi-box">
+        <div class="kpi-title">Peso Medio e Intensidad</div>
+        <div class="kpi-val">
+          <span>${fmtNum(last.avgWeight)} kg/rep</span>
+          ${formatDeltaBadge(last.avgWeight, prev?.avgWeight)}
+        </div>
+        <div class="kpi-sub">Esfuerzo medio: <strong>RPE ${fmtNum(last.avgRPE)}</strong> (RIR medio ${fmtNum(last.avgRIR)})</div>
+      </div>
+    `;
+
+    // Tabla sesión por sesión (de la más reciente a la más antigua)
+    const rows = [...sessions].reverse().map((s, revIdx) => {
+      const origIdx = sessions.length - 1 - revIdx;
+      const prevSession = origIdx > 0 ? sessions[origIdx - 1] : null;
+      const setsSummary = s.sets.map(st => `${fmtNum(st.weight)}×${st.reps}<span style="color:var(--muted);font-size:0.68rem;">(R${st.rir})</span>`).join(', ');
+      const fatigueTxt = s.sets.length >= 2
+        ? `<span style="color:${s.fatigueDropPct < -12 ? 'var(--accent-red)' : 'var(--muted)'}; font-weight:600;">${fmtNum(s.fatigueDropPct)}%</span>`
+        : `<span style="color:var(--muted);">1 serie</span>`;
+
+      return `
+        <tr>
+          <td style="font-weight:700; white-space:nowrap;">${s.date.slice(5)}</td>
+          <td style="font-size:0.75rem; line-height:1.35;">${setsSummary}</td>
+          <td style="white-space:nowrap;"><strong>${fmtNum(s.effective1RM)} kg</strong><br>${formatDeltaBadge(s.effective1RM, prevSession?.effective1RM)}</td>
+          <td style="white-space:nowrap;">${fmtNum(s.totalVolume)} kg<br><span style="color:var(--accent-green); font-size:0.72rem; font-weight:700;">${s.effectiveReps} reps ef.</span></td>
+          <td>${fatigueTxt}</td>
+        </tr>
+      `;
+    }).join('');
+
+    tbody.innerHTML = rows;
+  }
+
   function renderCharts() {
     const exercise = document.getElementById('chartExerciseSelect').value;
     const metric = document.getElementById('chartMetricSelect').value;
-    const filtered = exercise ? appData.sets.filter(s => s.exercise === exercise && s.type !== 'warmup') : [];
+    const sessions = computeExerciseSessions(exercise);
 
-    const byDate = {};
-    filtered.forEach(s => {
-      if (!byDate[s.date]) byDate[s.date] = { maxWeight: 0, effective1RM: 0, totalVolume: 0 };
-      if (s.weight > byDate[s.date].maxWeight) byDate[s.date].maxWeight = s.weight;
-      const e1rm = s.effective1RM || +(s.weight * (1 + s.reps / 30)).toFixed(1);
-      if (e1rm > byDate[s.date].effective1RM) byDate[s.date].effective1RM = e1rm;
-      byDate[s.date].totalVolume += (s.weight * s.reps);
-    });
+    renderExerciseAnalytics(sessions);
 
-    const dates = Object.keys(byDate).sort();
-    const values = dates.map(d => byDate[d][metric]);
+    const metricInfo = {
+      effective1RM: "💡 1RM Efectivo = Peso × (1 + (Reps + RIR)/30). Sube si levantas más peso, haces más reps o terminas con más RIR.",
+      raw1RM: "💡 1RM Bruto = Peso × (1 + Reps/30). Mide la fuerza demostrada únicamente por lo levantado sin contar el RIR.",
+      maxWeight: "💡 Peso máximo absoluto utilizado en al menos una serie efectiva de la sesión.",
+      topSetVolume: "💡 Mejor Serie (Top Set) = Máximo (Peso × Reps) en una sola serie. Ideal para ver progreso real sin que influya cuántas series hiciste.",
+      totalVolume: "💡 Tonelaje Total = Suma de (Peso × Reps) de todas las series efectivas del ejercicio en ese día.",
+      effectiveReps: "💡 Repeticiones Efectivas = Cuenta las últimas 5 repeticiones antes del fallo muscular (RIR 0 a 4) en cada serie.",
+      avgWeight: "💡 Peso Medio = Tonelaje Total dividido por las Repeticiones Totales de la sesión.",
+      totalReps: "💡 Suma total de repeticiones efectivas realizadas en ese ejercicio durante la sesión.",
+      avgRPE: "💡 RPE Medio = 10 menos tu RIR promedio del día (RPE 10 = fallo muscular, RPE 8 = 2 reps en recámara)."
+    };
+    document.getElementById('metricExplanationNote').innerText = metricInfo[metric] || "";
+
+    const dates = sessions.map(s => s.date);
+    const values = sessions.map(s => s[metric]);
 
     const ctx1 = document.getElementById('workoutChart').getContext('2d');
     if (workoutChartInstance) workoutChartInstance.destroy();
@@ -890,7 +1114,7 @@
       data: {
         labels: dates,
         datasets: [{
-          label: exercise || 'Sin ejercicio',
+          label: `${exercise || 'Ejercicio'}`,
           data: values,
           borderColor: '#38bdf8',
           backgroundColor: 'rgba(56, 189, 248, 0.18)',
@@ -911,6 +1135,51 @@
       }
     });
 
+    // Gráfico Global por Sesión Completa (todos los ejercicios del día)
+    const globalMetric = document.getElementById('globalMetricSelect').value;
+    const globalByDate = {};
+    appData.sets.filter(s => s.type !== 'warmup').forEach(s => {
+      if (!globalByDate[s.date]) {
+        globalByDate[s.date] = { globalVolume: 0, globalSets: 0, globalEffReps: 0, globalTotalReps: 0 };
+      }
+      const w = Number(s.weight) || 0;
+      const r = Number(s.reps) || 0;
+      globalByDate[s.date].globalVolume = +(globalByDate[s.date].globalVolume + w * r).toFixed(1);
+      globalByDate[s.date].globalSets += 1;
+      globalByDate[s.date].globalEffReps += calcEffectiveRepsForSet(r, s.rir);
+      globalByDate[s.date].globalTotalReps += r;
+    });
+
+    const gDates = Object.keys(globalByDate).sort();
+    const gValues = gDates.map(d => globalByDate[d][globalMetric]);
+
+    const ctxGlobal = document.getElementById('globalWorkoutChart').getContext('2d');
+    if (globalChartInstance) globalChartInstance.destroy();
+
+    globalChartInstance = new Chart(ctxGlobal, {
+      type: 'bar',
+      data: {
+        labels: gDates,
+        datasets: [{
+          label: 'Total del Entrenamiento',
+          data: gValues,
+          backgroundColor: 'rgba(167, 139, 250, 0.55)',
+          borderColor: '#a78bfa',
+          borderWidth: 2,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#f8fafc' } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+        }
+      }
+    });
+
+    // Gráfico de Biometría
     const bioDates = Object.keys(appData.biometrics).sort();
     const stepsData = bioDates.map(d => appData.biometrics[d].steps || 0);
     const hrData = bioDates.map(d => appData.biometrics[d].hr || null);
